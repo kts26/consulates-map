@@ -25,6 +25,9 @@
   .reset-btn { background: #f5f6fa; border: 2px solid #dde1ea; border-radius: 8px; padding: 8px 14px; cursor: pointer; font: inherit; font-size: 0.88rem; color: #555; text-align: left; width: 100%; }
   .reset-btn:hover { background: #eceff5; }
 
+  .plz-hint { font-size: 0.78rem; color: #888; margin-top: 6px; }
+  .plz-hint a { color: #003476; text-decoration: none; }
+  .plz-hint a:hover { text-decoration: underline; }
   .error-msg { display: none; background: #fff0f0; border-left: 4px solid #e53935; border-radius: 8px; padding: 12px 14px; font-size: 0.9rem; color: #c62828; }
   .error-msg.visible { display: block; }
 
@@ -87,6 +90,7 @@
         <input type="text" id="plzInput" placeholder="π.χ. 80331" maxlength="5" inputmode="numeric"/>
         <button type="button" id="plzBtn" aria-label="Αναζήτηση">&#128269;</button>
       </div>
+      <p class="plz-hint">Δεν γνωρίζετε τον ΤΚ σας; <a href="https://www.dastelefonbuch.de/Postleitzahlen" target="_blank" rel="noopener noreferrer">Βρείτε τον εδώ ↗</a></p>
     </div>
 
     <button type="button" class="reset-btn" id="resetBtn">↺ Επαναφορά χάρτη</button>
@@ -145,6 +149,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
   // ---- Bundesländer layer: colour = responsible consulate, tooltip = state name
   const blLayer = L.geoJSON(bundeslaenderData, {
     style: feature => ({
+      cursor: 'default',
       fillColor: consulateInfo[consulateOf(feature.properties.name)].color,
       fillOpacity: 0.45,
       color: 'white',
@@ -194,11 +199,18 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
     setPinState(null);
   }
 
-  function highlight(key) {
+  function highlight(key, flashBl) {
     let bounds = null;
+    const targetBls = flashBl ? [].concat(flashBl) : [];
     blLayer.eachLayer(layer => {
-      if (consulateOf(layer.feature.properties.name) === key) {
-        layer.setStyle({ fillOpacity: 0.75, weight: 2.5, color: '#333' });
+      const name = layer.feature.properties.name;
+      if (consulateOf(name) === key) {
+        const isTarget = targetBls.includes(name);
+        layer.setStyle({
+          fillOpacity: 0.75,
+          weight: isTarget ? 4 : 2.5,
+          color: isTarget ? '#f9d800' : '#333'
+        });
         const b = layer.getBounds();
         if (bounds) { bounds.extend(b); } else { bounds = L.latLngBounds(b.getSouthWest(), b.getNorthEast()); }
       } else {
@@ -234,6 +246,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
     email.textContent = info.email;
     email.href = 'mailto:' + info.email;
 
+    $('btnEproxeneio').textContent = '🌐 e-proxeneio ' + info.city;
     $('btnEproxeneio').href = info.eproxeneio;
     $('btnNav').href = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(info.nav);
 
@@ -244,7 +257,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
 
   function showResult(key, bundesland) {
     renderCard(key, bundesland);
-    highlight(key);
+    highlight(key, bundesland);
   }
 
   function hideMessages() {
