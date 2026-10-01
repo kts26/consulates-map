@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ανανέωση ταχυδρομικών κωδίκων – Χάρτης προξενείων</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f5f6fa; color: #222; line-height: 1.5; }
+  header { background: #003476; color: white; padding: 16px 24px; }
+  header h1 { font-size: 1.15rem; font-weight: 700; }
+  header p { font-size: 0.82rem; opacity: 0.85; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 48px; display: flex; flex-direction: column; gap: 18px; }
+  section { background: white; border-radius: 8px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+  h2 { font-size: 1rem; color: #003476; margin-bottom: 10px; }
+  ol { padding-left: 22px; font-size: 0.9rem; }
+  ol li { margin-bottom: 4px; }
+  .warn-inline { color: #b26a00; font-weight: 600; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 4px; }
+  .field input[type=file] { font: inherit; font-size: 0.88rem; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  select, input[type=number], input[type=text] { font: inherit; font-size: 0.9rem; padding: 6px 8px; border: 2px solid #dde1ea; border-radius: 6px; }
+  input[type=number] { width: 90px; }
+  button { font: inherit; font-size: 0.92rem; font-weight: 600; padding: 9px 16px; border-radius: 8px; border: 2px solid #003476; background: #003476; color: white; cursor: pointer; }
+  button:hover:not(:disabled) { background: #0055aa; border-color: #0055aa; }
+  button.secondary { background: white; color: #003476; }
+  button.secondary:hover:not(:disabled) { background: #e8eefb; }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+  button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #f2a900; outline-offset: 2px; }
+  .status { border-radius: 8px; padding: 12px 14px; font-weight: 600; font-size: 0.92rem; }
+  .status.ok { background: #e8f5e9; border-left: 4px solid #2e7d32; color: #1b5e20; }
+  .status.fail { background: #fff0f0; border-left: 4px solid #e53935; color: #b71c1c; }
+  .status ul { font-weight: 400; margin: 6px 0 0 18px; }
+  .stats { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin: 12px 0; }
+  .stats td { padding: 5px 8px; border-bottom: 1px solid #eee; }
+  .stats td:last-child { text-align: right; font-weight: 600; }
+  .block { margin-top: 14px; font-size: 0.88rem; }
+  .block h3 { font-size: 0.9rem; margin-bottom: 4px; }
+  .block.important { background: #fff8e1; border-left: 4px solid #f9a825; border-radius: 8px; padding: 10px 12px; }
+  .codes { font-family: Consolas, 'Courier New', monospace; font-size: 0.82rem; color: #444; word-break: break-word; }
+  .muted { color: #777; font-size: 0.85rem; }
+  .lookup-out { margin-top: 10px; font-size: 0.88rem; }
+  .lookup-out table { border-collapse: collapse; width: 100%; }
+  .lookup-out td { padding: 5px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
+  .lookup-out td:first-child { width: 80px; color: #777; }
+  .changed { background: #fff8e1; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Ανανέωση ταχυδρομικών κωδίκων</h1>
+  <p>Εργαλείο για τη σελίδα «Ελληνικά Προξενεία στη Γερμανία». Λειτουργεί εξ ολοκλήρου τοπικά, χωρίς σύνδεση στο διαδίκτυο.</p>
+</header>
+
+<main>
+  <section>
+    <h2>Βήματα</h2>
+    <ol>
+      <li><b>OpenPLZ:</b> ανοίξτε το <a href="https://github.com/openpotato/openplzapi.data" target="_blank" rel="noopener noreferrer">github.com/openpotato/openplzapi.data</a>, πατήστε «Code» → «Download ZIP», αποσυμπιέστε και βρείτε το αρχείο <b>streets.updated.csv</b>.</li>
+      <li><b>GeoNames:</b> από το <a href="https://download.geonames.org/export/zip/" target="_blank" rel="noopener noreferrer">download.geonames.org/export/zip</a> κατεβάστε το <b>DE.zip</b> και αποσυμπιέστε το αρχείο <b>DE.txt</b>.</li>
+      <li>Κατεβάστε το τρέχον <b>index.html</b> της σελίδας (από το GitHub) και κρατήστε το ως αντίγραφο ασφαλείας.</li>
+      <li><span class="warn-inline">Μην ανοίξετε τα αρχεία με Excel</span>, γιατί αλλοιώνει τους κωδικούς. Επιλέξτε τα παρακάτω και πατήστε «Έλεγχος».</li>
+      <li>Διαβάστε την αναφορά. Προσέξτε ιδιαίτερα τους κωδικούς που αλλάζουν προξενείο και τους «νέους υποψήφιους» σε δύο κρατίδια.</li>
+      <li>Πατήστε «Λήψη νέου index.html» και ανεβάστε το στο GitHub στη θέση του παλιού, με το όνομα ακριβώς <b>index.html</b>. Δοκιμάστε μετά δύο-τρεις κωδικούς.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Αρχεία</h2>
+    <div class="field">
+      <label for="openplzFile">OpenPLZ: streets.updated.csv</label>
+      <input type="file" id="openplzFile" accept=".csv,text/csv">
+    </div>
+    <div class="field">
+      <label for="geonamesFile">GeoNames: DE.txt <span class="muted">(συνιστάται, συμπληρώνει τους λίγους κωδικούς που λείπουν από το OpenPLZ)</span></label>
+      <input type="file" id="geonamesFile" accept=".txt,text/plain">
+    </div>
+    <div class="field">
+      <label for="htmlFile">Τρέχον index.html της σελίδας</label>
+      <input type="file" id="htmlFile" accept=".html,text/html">
+    </div>
+    <div class="field">
+      <label for="monthSel">Μήνας ενημέρωσης (εμφανίζεται στη σελίδα ως «ενημέρωση …»)</label>
+      <div class="row">
+        <select id="monthSel"></select>
+        <input type="number" id="yearInput" min="2020" max="2100" aria-label="Έτος">
+      </div>
+    </div>
+    <button type="button" id="checkBtn" disabled>Έλεγχος</button>
+    <p class="muted" id="busy" hidden style="margin-top:8px">Επεξεργασία… (το αρχείο OpenPLZ είναι μεγάλο, μπορεί να χρειαστούν λίγα δευτερόλεπτα)</p>
+  </section>
+
+  <section id="reportSection" hidden>
+    <h2>Αναφορά</h2>
+    <div id="report"></div>
+    <div class="row" style="margin-top:16px">
+      <button type="button" id="downloadBtn" disabled>Λήψη νέου index.html</button>
+    </div>
+  </section>
+
+  <section id="lookupSection" hidden>
+    <h2>Σύγκριση κωδικού (προαιρετικό)</h2>
+    <p class="muted">Γράψτε έναν ΤΚ για να δείτε τι δείχνει η σελίδα σήμερα και τι θα δείχνει μετά την ανανέωση.</p>
+    <div class="row" style="margin-top:8px">
+      <input type="text" id="lookupInput" maxlength="5" inputmode="numeric" placeholder="π.χ. 80331" aria-label="Ταχυδρομικός κώδικας">
+      <button type="button" class="secondary" id="lookupBtn">Σύγκριση</button>
+    </div>
+    <div class="lookup-out" id="lookupOut"></div>
+  </section>
+</main>
+
+<script id="update-core">
+/* Pure logic, no DOM. Builds the postal-code table of index.html from
+   OpenPLZ (streets.updated.csv, ODbL) + GeoNames (DE.txt, CC BY 4.0) + the verified
+   list `plzOverrides` that lives inside index.html, checks everything, and returns the
+   new index.html or the reasons why it refused. Used by update.html and for the first build. */
+const Core = (function () {
+  'use strict';
+
+  const MONTHS_EL_GEN = ['Ιανουαρίου','Φεβρουαρίου','Μαρτίου','Απριλίου','Μαΐου','Ιουνίου','Ιουλίου','Αυγούστου','Σεπτεμβρίου','Οκτωβρίου','Νοεμβρίου','Δεκεμβρίου'];
+  const MONTHS_DE = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+  const MAX_NAMES = 3;          // place names stored per postal code
+  const MIN_EXTRA_STREETS = 3;  // a second state of the SAME consulate is listed only with at least this many streets
+  const MAX_DROP = 0.05;        // refuse if the number of codes falls by more than 5%
+  const MAX_RISE = 0.10;        // warn if it rises by more than 10%
+
+  // Official state codes = first two digits of the German regional key (Regionalschlüssel)
+  const STATE_BY_CODE = {
+    '01': 'Schleswig-Holstein', '02': 'Hamburg', '03': 'Niedersachsen', '04': 'Bremen', '05': 'Nordrhein-Westfalen',
+    '06': 'Hessen', '07': 'Rheinland-Pfalz', '08': 'Baden-Württemberg', '09': 'Bayern', '10': 'Saarland',
+    '11': 'Berlin', '12': 'Brandenburg', '13': 'Mecklenburg-Vorpommern', '14': 'Sachsen', '15': 'Sachsen-Anhalt', '16': 'Thüringen'
+  };
+  // GeoNames mixes German and English state names
+  const GEONAMES_STATE = {
+    'Bavaria': 'Bayern', 'Land Berlin': 'Berlin', 'Lower Saxony': 'Niedersachsen', 'Mecklenburg-Western Pomerania': 'Mecklenburg-Vorpommern',
+    'Saxony': 'Sachsen', 'Saxony-Anhalt': 'Sachsen-Anhalt', 'Thuringia': 'Thüringen', 'Hesse': 'Hessen',
+    'North Rhine-Westphalia': 'Nordrhein-Westfalen', 'Rhineland-Palatinate': 'Rheinland-Pfalz', 'Lower Saxony ': 'Niedersachsen'
+  };
+
+  // CSV with a given separator and optional "quoted" fields
+  function parseCSV(text, sep) {
+    const rows = [];
+    let row = [], field = '', inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      if (inQuotes) {
+        if (ch === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else { inQuotes = false; } }
+        else { field += ch; }
+      } else if (ch === '"') { inQuotes = true; }
+      else if (ch === sep) { row.push(field); field = ''; }
+      else if (ch === '\n' || ch === '\r') {
+        if (ch === '\r' && text[i + 1] === '\n') i++;
+        row.push(field); rows.push(row); row = []; field = '';
+      } else { field += ch; }
+    }
+    if (field !== '' || row.length) { row.push(field); rows.push(row); }
+    return rows.filter(r => !(r.length === 1 && r[0].trim() === ''));
+  }
+
+  // Finds the single line "const NAME = {...};" and parses its JSON
+  function findDataLine(html, name) {
+    const re = new RegExp('^const ' + name + ' = (.*);\\r?$', 'mg');
+    const found = [];
+    let m;
+    while ((m = re.exec(html)) !== null) found.push(m);
+    if (found.length !== 1) return { error: found.length === 0 ? 'missing' : 'duplicate' };
+    try { return { value: JSON.parse(found[0][1]), start: found[0].index, text: found[0][0] }; }
+    catch (e) { return { error: 'invalid' }; }
+  }
+
+  function consulatesOf(entry, blConsulate) {
+    if (!entry) return [];
+    if (entry.ambiguous) return Array.from(new Set(entry.choices.map(c => c.c))).sort();
+    return Array.from(new Set([].concat(entry.b).map(b => blConsulate[b]))).sort();
+  }
+
+  // ---- Readers: return Map(plz -> { counts: Map(state -> n), names: Map(state -> Map(name -> n)) })
+  function addRecord(map, plz, state, name) {
+    let rec = map.get(plz);
+    if (!rec) { rec = { counts: new Map(), names: new Map() }; map.set(plz, rec); }
+    rec.counts.set(state, (rec.counts.get(state) || 0) + 1);
+    if (!rec.names.has(state)) rec.names.set(state, new Map());
+    if (name) { const nm = rec.names.get(state); nm.set(name, (nm.get(name) || 0) + 1); }
+  }
+
+  function readOpenPLZ(text, fatal) {
+    if (text.indexOf('\uFFFD') !== -1) { fatal.push('Το αρχείο OpenPLZ δεν είναι σε κωδικοποίηση UTF-8 (πιθανότατα αποθηκεύτηκε από Excel). Κατεβάστε το ξανά.'); return null; }
+    const rows = parseCSV(text.replace(/^\uFEFF/, ''), ',');
+    if (rows.length < 2) { fatal.push('Το αρχείο OpenPLZ είναι κενό.'); return null; }
+    const h = rows[0].map(x => x.trim());
+    const iP = h.indexOf('PostalCode'), iL = h.indexOf('Locality'), iR = h.indexOf('RegionalKey');
+    if (iP < 0 || iL < 0 || iR < 0) { fatal.push('Το αρχείο OpenPLZ δεν έχει τις στήλες «PostalCode», «Locality», «RegionalKey». Βεβαιωθείτε ότι επιλέξατε το streets.updated.csv.'); return null; }
+    if (rows[rows.length - 1].length < h.length) { fatal.push('Το αρχείο OpenPLZ τελειώνει με μισή γραμμή: είναι κομμένο (ημιτελής λήψη ή αποσυμπίεση). Κατεβάστε το ξανά.'); return null; }
+    const map = new Map();
+    let bad = 0;
+    for (let r = 1; r < rows.length; r++) {
+      const row = rows[r];
+      if (row.length < h.length) { bad++; continue; }
+      const plz = row[iP].trim(), state = STATE_BY_CODE[row[iR].trim().slice(0, 2)];
+      if (!/^\d{5}$/.test(plz) || !state) { bad++; continue; }
+      addRecord(map, plz, state, row[iL].trim());
+    }
+    if (bad > rows.length * 0.01) fatal.push('Το αρχείο OpenPLZ έχει πολλές αλλοιωμένες γραμμές (' + bad + '). Πιθανότατα είναι κομμένο ή αλλοιωμένο.');
+    return { map: map, rows: rows.length - 1, bad: bad };
+  }
+
+  function readGeoNames(text, fatal) {
+    if (text.indexOf('\uFFFD') !== -1) { fatal.push('Το αρχείο GeoNames δεν είναι σε κωδικοποίηση UTF-8. Κατεβάστε το ξανά.'); return null; }
+    const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/).filter(l => l.trim() !== '');
+    if (!lines.length || lines[0].split('\t')[0] !== 'DE') { fatal.push('Το αρχείο GeoNames δεν φαίνεται να είναι το DE.txt (από το DE.zip).'); return null; }
+    const map = new Map(), unknown = new Set();
+    let skippedLarge = 0;
+    for (const line of lines) {
+      const f = line.split('\t');
+      if (f.length < 12 || f[0] !== 'DE') continue;
+      if (f[11].trim() === '') { skippedLarge++; continue; }      // no accuracy = large-volume recipient (company, office), not a residential code
+      const plz = f[1].trim();
+      const raw = f[3].trim(), state = GEONAMES_STATE[raw] || raw;
+      if (!/^\d{5}$/.test(plz)) continue;
+      if (!Object.values(STATE_BY_CODE).includes(state)) { unknown.add(raw || '(κενό)'); continue; }
+      addRecord(map, plz, state, f[2].trim());
+    }
+    if (unknown.size) fatal.push('Άγνωστα ονόματα κρατιδίων στο GeoNames: ' + Array.from(unknown).join(', ') + '.');
+    return { map: map, skippedLarge: skippedLarge };
+  }
+
+  // ---- One table entry, in the exact format the page expects
+  function sortedStates(rec) {
+    return Array.from(rec.counts.entries()).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1));
+  }
+  function namesFor(rec, states) {
+    const all = new Map();
+    states.forEach(s => (rec.names.get(s) || new Map()).forEach((n, name) => all.set(name, (all.get(name) || 0) + n)));
+    return Array.from(all.entries()).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).map(e => e[0]);
+  }
+  function plainEntry(states, names) {
+    const entry = { b: states.length === 1 ? states[0] : states.slice().sort() };
+    if (names.length) entry.o = names.slice(0, MAX_NAMES);
+    if (names.length > MAX_NAMES) entry.n = names.length;
+    return entry;
+  }
+
+  function buildTable(openplz, geonames, overrides, blConsulate, report) {
+    const table = {};
+    const plzs = new Set(openplz.keys());
+    if (geonames) geonames.forEach((_, p) => plzs.add(p));
+    Object.keys(overrides).forEach(p => plzs.add(p));
+
+    Array.from(plzs).sort().forEach(plz => {
+      const rec = openplz.get(plz) || (geonames && geonames.get(plz)) || null;
+      const ov = overrides[plz];
+      if (rec && !openplz.has(plz)) report.fromGeoNames.push(plz);
+
+      if (ov && ov.choices) {                         // verified: two states, two consulates
+        table[plz] = { ambiguous: true, choices: ov.choices.map(c => ({ ort: c.ort, bl: c.bl, c: blConsulate[c.bl] })) };
+        return;
+      }
+      if (ov && ov.single) {                          // verified: one state only (border noise in the sources)
+        const names = rec ? namesFor(rec, [ov.single]) : [];
+        table[plz] = plainEntry([ov.single], names.length ? names : (rec ? namesFor(rec, Array.from(rec.counts.keys())) : (ov.ort || [])));
+        return;
+      }
+      if (!rec) return;
+      const ranked = sortedStates(rec);
+      const mainState = ranked[0][0], mainConsulate = blConsulate[mainState];
+      const states = [mainState];
+      ranked.slice(1).forEach(([s, n]) => {
+        if (blConsulate[s] === mainConsulate) { if (n >= MIN_EXTRA_STREETS) states.push(s); }
+        else report.candidates.push({ plz: plz, counts: ranked.map(([st, k]) => st + ': ' + k).join(', ') });
+      });
+      table[plz] = plainEntry(states, namesFor(rec, states));
+    });
+    return table;
+  }
+
+  function serialize(map) {
+    const keys = Object.keys(map).sort();
+    return '{' + keys.map(k => JSON.stringify(k) + ':' + JSON.stringify(map[k])).join(',') + '}';
+  }
+
+  function updateDates(html, year, monthIndex) {
+    let el = 0, de = 0;
+    let out = html.replace(/ενημέρωση [^\s,.;:'"<>]+ \d{4}/g, () => { el++; return 'ενημέρωση ' + MONTHS_EL_GEN[monthIndex] + ' ' + year; });
+    out = out.replace(/Stand: [^\s,.;:'"<>]+ \d{4}/g, () => { de++; return 'Stand: ' + MONTHS_DE[monthIndex] + ' ' + year; });
+    return { html: out, el: el, de: de };
+  }
+
+  function run(openplzText, geonamesText, htmlText, year, monthIndex) {
+    const fatal = [], warnings = [];
+    const fail = () => ({ ok: false, fatal: fatal, warnings: warnings });
+
+    // ---- The page file
+    if (!/^<script id="app-logic">\r?$/m.test(htmlText) || !/^const bundeslaenderData = /m.test(htmlText)) {
+      fatal.push('Το αρχείο HTML δεν φαίνεται να είναι το index.html του χάρτη προξενείων.');
+      return fail();
+    }
+    const oldLine = findDataLine(htmlText, 'plzMap');
+    const blLine = findDataLine(htmlText, 'blConsulate');
+    const ovLine = findDataLine(htmlText, 'plzOverrides');
+    if (oldLine.error) fatal.push('Ο πίνακας κωδικών (plzMap) στο index.html λείπει, υπάρχει δύο φορές ή είναι κατεστραμμένος.');
+    if (blLine.error) fatal.push('Ο κανόνας αρμοδιότητας (blConsulate) στο index.html λείπει ή είναι κατεστραμμένος.');
+    if (ovLine.error) fatal.push('Η λίστα επαληθευμένων ΤΚ (plzOverrides) στο index.html λείπει ή είναι κατεστραμμένη.');
+    if (fatal.length) return fail();
+    const oldMap = oldLine.value, blConsulate = blLine.value, overrides = ovLine.value;
+    Object.keys(overrides).forEach(p => {
+      const o = overrides[p];
+      const sts = o.choices ? o.choices.map(c => c.bl) : [o.single];
+      if (o.ort && !Array.isArray(o.ort)) fatal.push('Μη έγκυρη εγγραφή στη λίστα επαληθευμένων ΤΚ: ' + p + ' (ort).');
+      if (!/^\d{5}$/.test(p) || sts.some(s => !blConsulate[s])) fatal.push('Μη έγκυρη εγγραφή στη λίστα επαληθευμένων ΤΚ: ' + p + '.');
+    });
+    if (fatal.length) return fail();
+
+    // ---- The sources
+    const op = readOpenPLZ(openplzText || '', fatal);
+    const gn = geonamesText ? readGeoNames(geonamesText, fatal) : null;
+    if (fatal.length) return fail();
+    if (!gn) warnings.push('Δεν δόθηκε αρχείο GeoNames: όσοι ΤΚ λείπουν από το OpenPLZ θα λείψουν και από τη σελίδα.');
+    const seen = new Set();
+    op.map.forEach(rec => rec.counts.forEach((_, s) => seen.add(s)));
+    const missingStates = Object.keys(blConsulate).filter(s => !seen.has(s));
+    const oldTotal = Object.keys(oldMap).length;
+    if (op.map.size < oldTotal * (1 - MAX_DROP)) {   // GeoNames must never silently stand in for a truncated OpenPLZ file
+      fatal.push('Το αρχείο OpenPLZ περιέχει μόνο ' + op.map.size + ' κωδικούς (η σελίδα σήμερα έχει ' + oldTotal + '). Είναι πιθανότατα κομμένο ή ελλιπές.');
+      return fail();
+    }
+    if (missingStates.length) { fatal.push('Στο αρχείο OpenPLZ λείπουν εντελώς τα κρατίδια: ' + missingStates.join(', ') + '. Το αρχείο είναι πιθανότατα ελλιπές.'); return fail(); }
+
+    // ---- New table
+    const report = { candidates: [], fromGeoNames: [] };
+    const newMap = buildTable(op.map, gn ? gn.map : null, overrides, blConsulate, report);
+    const oldKeys = Object.keys(oldMap), newKeys = Object.keys(newMap);
+    const oldCount = oldKeys.length, newCount = newKeys.length;
+    if (newCount < oldCount * (1 - MAX_DROP)) {
+      fatal.push('Οι κωδικοί μειώνονται από ' + oldCount + ' σε ' + newCount + ' (πάνω από ' + Math.round(MAX_DROP * 100) + '%). Τα αρχεία είναι πιθανότατα ελλιπή.');
+      return fail();
+    }
+    if (newCount > oldCount * (1 + MAX_RISE)) warnings.push('Οι κωδικοί αυξάνονται από ' + oldCount + ' σε ' + newCount + '. Ελέγξτε ότι πρόκειται για τα σωστά αρχεία.');
+
+    // ---- Differences
+    const has = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
+    const added = newKeys.filter(k => !has(oldMap, k)).sort();
+    const removed = oldKeys.filter(k => !has(newMap, k)).sort();
+    const consulateChanged = [], otherChanged = [];
+    newKeys.forEach(k => {
+      if (!has(oldMap, k)) return;
+      if (consulatesOf(oldMap[k], blConsulate).join('|') !== consulatesOf(newMap[k], blConsulate).join('|')) consulateChanged.push(k);
+      else if (JSON.stringify(oldMap[k]) !== JSON.stringify(newMap[k])) otherChanged.push(k);
+    });
+    const ambiguousCount = newKeys.filter(k => newMap[k].ambiguous).length;
+
+    // ---- New page: replace only the table line, then the date texts
+    const newLine = 'const plzMap = ' + serialize(newMap) + ';' + (oldLine.text.endsWith('\r') ? '\r' : '');
+    let html = htmlText.slice(0, oldLine.start) + newLine + htmlText.slice(oldLine.start + oldLine.text.length);
+    const dates = updateDates(html, year, monthIndex);
+    html = dates.html;
+    if (dates.el === 0 || dates.de === 0) warnings.push('Δεν βρέθηκε το κείμενο της ημερομηνίας ενημέρωσης. Οι κωδικοί ανανεώθηκαν κανονικά.');
+
+    // ---- Self-check before offering the file
+    const check = findDataLine(html, 'plzMap');
+    if (check.error || serialize(check.value) !== serialize(newMap)) { fatal.push('Εσωτερικό σφάλμα: ο νέος πίνακας δεν επαληθεύτηκε. Δεν δημιουργήθηκε αρχείο.'); return fail(); }
+    const oldLines = htmlText.split('\n'), newLines = html.split('\n');
+    const unexpected = oldLines.length !== newLines.length ||
+      oldLines.some((l, i) => l !== newLines[i] && !l.startsWith('const plzMap = ') && !/ενημέρωση |Stand: /.test(l));
+    if (unexpected) { fatal.push('Εσωτερικό σφάλμα: θα άλλαζαν και άλλα σημεία του αρχείου. Δεν δημιουργήθηκε αρχείο.'); return fail(); }
+
+    return {
+      ok: true, fatal: fatal, warnings: warnings, html: html, oldMap: oldMap, newMap: newMap, blConsulate: blConsulate,
+      stats: { oldCount, newCount, ambiguousCount, added, removed, consulateChanged, otherChanged,
+               candidates: report.candidates, fromGeoNames: report.fromGeoNames, openplzRows: op.rows, unchanged: html === htmlText }
+    };
+  }
+
+  return { run: run, parseCSV: parseCSV, findDataLine: findDataLine, serialize: serialize, consulatesOf: consulatesOf };
+})();
+if (typeof module !== 'undefined') module.exports = Core;
+</script>
+
+<script id="update-ui">
+(function () {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const MONTHS_EL = ['Ιανουάριος','Φεβρουάριος','Μάρτιος','Απρίλιος','Μάιος','Ιούνιος','Ιούλιος','Αύγουστος','Σεπτέμβριος','Οκτώβριος','Νοέμβριος','Δεκέμβριος'];
+  let result = null;
+
+  const now = new Date();
+  MONTHS_EL.forEach((m, i) => { const o = document.createElement('option'); o.value = i; o.textContent = m; $('monthSel').appendChild(o); });
+  $('monthSel').value = now.getMonth();
+  $('yearInput').value = now.getFullYear();
+
+  function readFile(input) {
+    return new Promise((resolve, reject) => {
+      const f = input.files[0];
+      if (!f) { resolve(null); return; }
+      const r = new FileReader();
+      r.onload = () => resolve(r.result);
+      r.onerror = () => reject(r.error);
+      r.readAsText(f, 'UTF-8');
+    });
+  }
+
+  function invalidate() {
+    result = null;
+    $('downloadBtn').disabled = true;
+    $('reportSection').hidden = true;
+    $('lookupSection').hidden = true;
+    $('checkBtn').disabled = !($('openplzFile').files.length && $('htmlFile').files.length);
+  }
+  ['openplzFile', 'geonamesFile', 'htmlFile', 'monthSel', 'yearInput'].forEach(id => $(id).addEventListener('change', invalidate));
+
+  function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+
+  function codeList(title, codes, important, note) {
+    const box = el('div', 'block' + (important ? ' important' : ''));
+    box.appendChild(el('h3', '', title + ' (' + codes.length + ')'));
+    if (note) box.appendChild(el('p', 'muted', note));
+    const shown = codes.slice(0, 60).join(', ') + (codes.length > 60 ? ' … και ' + (codes.length - 60) + ' ακόμη' : '');
+    box.appendChild(el('p', 'codes', shown));
+    return box;
+  }
+
+  function render(res) {
+    const out = $('report');
+    out.textContent = '';
+    const status = el('div', 'status ' + (res.ok ? 'ok' : 'fail'));
+    if (res.ok) {
+      status.textContent = res.stats.unchanged
+        ? '✓ Ο έλεγχος πέρασε. Τα δεδομένα είναι ίδια με της τρέχουσας σελίδας· δεν χρειάζεται ανανέωση.'
+        : '✓ Ο έλεγχος πέρασε. Το νέο index.html είναι έτοιμο για λήψη.';
+    } else {
+      status.textContent = '✗ Η ανανέωση σταμάτησε. Δεν δημιουργήθηκε αρχείο και η σελίδα δεν επηρεάζεται.';
+      const ul = el('ul');
+      res.fatal.forEach(f => ul.appendChild(el('li', '', f)));
+      status.appendChild(ul);
+    }
+    out.appendChild(status);
+
+    if (res.warnings.length) {
+      const w = el('div', 'block important');
+      w.appendChild(el('h3', '', 'Προειδοποιήσεις'));
+      res.warnings.forEach(t => w.appendChild(el('p', '', t)));
+      out.appendChild(w);
+    }
+    if (!res.ok) return;
+
+    const s = res.stats;
+    const table = el('table', 'stats');
+    [['Κωδικοί σήμερα', s.oldCount], ['Κωδικοί μετά την ανανέωση', s.newCount],
+     ['Κωδικοί με επιλογή πόλης (δύο προξενεία)', s.ambiguousCount], ['Κωδικοί που συμπληρώθηκαν από GeoNames', s.fromGeoNames.length]].forEach(([k, v]) => {
+      const tr = el('tr'); tr.appendChild(el('td', '', k)); tr.appendChild(el('td', '', String(v))); table.appendChild(tr);
+    });
+    out.appendChild(table);
+
+    if (s.candidates.length) {
+      const box = codeList('Νέοι υποψήφιοι ΤΚ σε δύο κρατίδια με διαφορετικό προξενείο', s.candidates.map(c => c.plz + ' (' + c.counts + ')'), true,
+        'Στο OpenPLZ αυτοί οι κωδικοί έχουν οδούς και σε κρατίδιο άλλου προξενείου. Η σελίδα προς το παρόν τους αποδίδει στο κρατίδιο με τις περισσότερες οδούς. ' +
+        'Ελέγξτε τους στην αναζήτηση ΤΚ της Deutsche Post (με τον ΤΚ ή με μια από τις οδούς). Αν είναι πράγματι διπλοί, προσθέστε τους στη λίστα «plzOverrides» του index.html (βλ. οδηγίες README) και ξανατρέξτε τον έλεγχο.');
+      out.appendChild(box);
+    }
+    if (s.consulateChanged.length) out.appendChild(codeList('Κωδικοί που αλλάζουν αρμόδιο προξενείο', s.consulateChanged, true, 'Ελέγξτε τους με τη «Σύγκριση κωδικού» παρακάτω.'));
+    if (s.added.length) out.appendChild(codeList('Νέοι κωδικοί', s.added));
+    if (s.removed.length) out.appendChild(codeList('Κωδικοί που καταργούνται', s.removed));
+    if (s.otherChanged.length) out.appendChild(codeList('Άλλες μικρές αλλαγές (ονόματα πόλεων κ.λπ., ίδιο προξενείο)', s.otherChanged));
+  }
+
+  $('checkBtn').addEventListener('click', async () => {
+    $('checkBtn').disabled = true;
+    $('busy').hidden = false;
+    await new Promise(r => setTimeout(r, 30));   // let the "busy" text appear
+    try {
+      const [op, gn, html] = await Promise.all([readFile($('openplzFile')), readFile($('geonamesFile')), readFile($('htmlFile'))]);
+      const year = parseInt($('yearInput').value, 10);
+      if (!(year >= 2020 && year <= 2100)) throw new Error('year');
+      result = Core.run(op, gn, html, year, parseInt($('monthSel').value, 10));
+    } catch (e) {
+      result = { ok: false, fatal: [e.message === 'year' ? 'Μη έγκυρο έτος.' : 'Τα αρχεία δεν μπόρεσαν να διαβαστούν.'], warnings: [] };
+    }
+    render(result);
+    $('busy').hidden = true;
+    $('reportSection').hidden = false;
+    $('lookupSection').hidden = !result.ok;
+    $('downloadBtn').disabled = !result.ok || result.stats.unchanged;
+    $('checkBtn').disabled = false;
+  });
+
+  $('downloadBtn').addEventListener('click', () => {
+    if (!result || !result.ok) return;
+    const blob = new Blob([result.html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'index.html';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  });
+
+  function describe(entry) {
+    if (!entry) return 'δεν υπάρχει';
+    if (entry.ambiguous) return 'Επιλογή πόλης: ' + entry.choices.map(c => c.ort + ' (' + c.bl + ') → ' + c.c).join(' · ');
+    const cons = Core.consulatesOf(entry, result.blConsulate).join(', ');
+    return cons + ' (' + [].concat(entry.b).join(' / ') + ')' + (entry.o ? ' · ' + entry.o.join(', ') + (entry.n ? ' +' + (entry.n - entry.o.length) : '') : '');
+  }
+
+  function lookup() {
+    const out = $('lookupOut');
+    out.textContent = '';
+    if (!result || !result.ok) return;
+    const plz = $('lookupInput').value.replace(/\s+/g, '');
+    if (!/^\d{5}$/.test(plz)) { out.appendChild(el('p', 'muted', 'Γράψτε 5ψήφιο κωδικό.')); return; }
+    const before = describe(result.oldMap[plz]), after = describe(result.newMap[plz]);
+    const table = el('table');
+    [['Σήμερα', before], ['Μετά', after]].forEach(([k, v]) => {
+      const tr = el('tr', before !== after ? 'changed' : '');
+      tr.appendChild(el('td', '', k)); tr.appendChild(el('td', '', v)); table.appendChild(tr);
+    });
+    out.appendChild(table);
+    if (before === after) out.appendChild(el('p', 'muted', 'Καμία αλλαγή για αυτόν τον κωδικό.'));
+  }
+  $('lookupBtn').addEventListener('click', lookup);
+  $('lookupInput').addEventListener('keydown', e => { if (e.key === 'Enter') lookup(); });
+})();
+</script>
+</body>
+</html>
