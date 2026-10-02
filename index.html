@@ -112,6 +112,20 @@
   .city-label .city-name { position: absolute; left: 8px; top: -6px; font-size: 10.5px; color: #4f5b69; opacity: 0.75; white-space: nowrap; text-shadow: 0 0 2px #fff, 0 0 2px #fff, 0 0 3px #fff; }
 
   button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #f2a900; outline-offset: 2px; }
+
+  /* Guide modal trigger button */
+  .guide-modal-btn { display: inline-flex; align-items: center; gap: 4px; background: none; border: none; padding: 0; font: inherit; font-size: 0.84rem; font-weight: 600; color: #003476; cursor: pointer; text-decoration: none; }
+  .guide-modal-btn:hover { text-decoration: underline; }
+
+  /* Guide modal overlay */
+  #guideModal { display: none; position: fixed; inset: 0; z-index: 9000; background: rgba(0,0,0,0.55); align-items: center; justify-content: center; padding: 16px; }
+  #guideModal.open { display: flex; }
+  .guide-modal-box { background: white; border-radius: 10px; box-shadow: 0 8px 40px rgba(0,0,0,0.25); width: 100%; max-width: 900px; height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+  .guide-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #003476; color: white; flex-shrink: 0; }
+  .guide-modal-header span { font-size: 0.95rem; font-weight: 700; }
+  .guide-modal-close { background: none; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 4px; opacity: 0.85; }
+  .guide-modal-close:hover { opacity: 1; background: rgba(255,255,255,0.15); }
+  #guideFrame { flex: 1; border: none; width: 100%; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
   /* Phones and narrow screens: one scrolling page – search, card, consulates, map, data note */
@@ -169,7 +183,7 @@
         <li><span class="num">2</span><span data-i18n="step2">Μεταβείτε στο e-proxeneio του προξενείου σας.</span></li>
         <li><span class="num">3</span><span data-i18n="step3">Υποβάλετε την αίτησή σας online· αν χρειάζεται αυτοπρόσωπη παρουσία, το ραντεβού κλείνεται μέσα από την αίτηση.</span></li>
       </ol>
-      <p class="guide-line"><span data-i18n="guideLead">Πρώτη φορά στο e-proxeneio;</span> <a href="odigos-e-proxeneio.pdf" target="_blank" rel="noopener"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span data-i18n="guideLink">Οδηγός χρήσης (PDF)</span></a></p>
+      <p class="guide-line"><span data-i18n="guideLead">Πρώτη φορά στο e-proxeneio;</span> <button type="button" class="guide-modal-btn" onclick="openGuideModal()"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span data-i18n="guideLink">Οδηγός χρήσης</span></button></p>
     </div>
 
     <div class="result-card" id="resultCard" aria-live="polite">
@@ -183,7 +197,7 @@
         <svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
       </a>
       <div class="guide">
-        <span><span data-i18n="guideLead">Πρώτη φορά στο e-proxeneio;</span> <a id="guideLink" href="odigos-e-proxeneio.pdf" target="_blank" rel="noopener"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span data-i18n="guideLink">Οδηγός χρήσης (PDF)</span></a></span>
+        <span><span data-i18n="guideLead">Πρώτη φορά στο e-proxeneio;</span> <button type="button" class="guide-modal-btn" onclick="openGuideModal()"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span data-i18n="guideLink">Οδηγός χρήσης</span></button></span>
       </div>
 
       <div class="contact">
@@ -711,6 +725,40 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
 
   applyLanguage();
 })();
+</script>
+<!-- Guide modal -->
+<div id="guideModal" role="dialog" aria-modal="true" aria-label="Οδηγός χρήσης e-proxeneio">
+  <div class="guide-modal-box">
+    <div class="guide-modal-header">
+      <span>Οδηγός χρήσης e-proxeneio | Leitfaden e-proxeneio</span>
+      <button class="guide-modal-close" onclick="closeGuideModal()" aria-label="Κλείσιμο">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <iframe id="guideFrame" title="Οδηγός χρήσης e-proxeneio"></iframe>
+  </div>
+</div>
+
+<script>
+function openGuideModal() {
+  var modal = document.getElementById('guideModal');
+  var frame = document.getElementById('guideFrame');
+  if (!frame.src || frame.src === window.location.href) {
+    frame.src = 'odigos-e-proxeneio.html';
+  }
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeGuideModal() {
+  document.getElementById('guideModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('guideModal').addEventListener('click', function(e) {
+  if (e.target === this) closeGuideModal();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeGuideModal();
+});
 </script>
 </body>
 </html>
