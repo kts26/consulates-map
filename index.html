@@ -803,6 +803,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .guide-modal-close { background: none; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 4px; opacity: 0.85; }
   .guide-modal-close:hover { opacity: 1; background: rgba(255,255,255,0.15); }
   #guideFrame { flex: 1; border: none; width: 100%; }
+  /* Shown while the guide (a few MB of screenshots) is on its way */
+  .guide-loading { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: #555; font-size: 0.9rem; }
+  .guide-loading[hidden] { display: none !important; }
+  .guide-spinner { width: 34px; height: 34px; border: 3px solid #dde1ea; border-top-color: #003476; border-radius: 50%; animation: guideSpin 0.9s linear infinite; }
+  @keyframes guideSpin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .guide-spinner { animation: none; border-top-color: #dde1ea; } }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
   /* Print: the result card is what people put on paper – map, buttons and modal are not */
@@ -968,6 +974,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
       guideLink: 'Οδηγός χρήσης (HTML/PDF)',
       guideModalTitle: 'Οδηγός χρήσης e-proxeneio',
       guideModalClose: 'Κλείσιμο',
+      guideLoading: 'Φόρτωση οδηγού… (περιέχει εικόνες, μπορεί να αργήσει σε αργή σύνδεση)',
       nav: 'Οδηγίες μετάβασης',
       website: 'Ιστοσελίδα προξενείου',
       note: 'Σε περίπτωση αμφιβολίας για την αρμοδιότητα, επικοινωνήστε με το προξενείο.',
@@ -1005,6 +1012,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
       guideLink: 'Anleitung (HTML/PDF, auf Griechisch)',
       guideModalTitle: 'Anleitung e-proxeneio',
       guideModalClose: 'Schließen',
+      guideLoading: 'Anleitung wird geladen… (enthält Bilder, bei langsamer Verbindung etwas Geduld)',
       nav: 'Route planen',
       website: 'Website des Konsulats',
       note: 'Bei Fragen zur Zuständigkeit wenden Sie sich bitte an das Konsulat.',
@@ -1439,7 +1447,11 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
       </button>
     </div>
-    <iframe id="guideFrame" title="Οδηγός χρήσης e-proxeneio"></iframe>
+    <div class="guide-loading" id="guideLoading">
+      <div class="guide-spinner" aria-hidden="true"></div>
+      <p data-i18n="guideLoading">Φόρτωση οδηγού… (περιέχει εικόνες, μπορεί να αργήσει σε αργή σύνδεση)</p>
+    </div>
+    <iframe id="guideFrame" title="Οδηγός χρήσης e-proxeneio" hidden></iframe>
   </div>
 </div>
 
@@ -1447,21 +1459,31 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
 (function () {
   var modal   = document.getElementById('guideModal');
   var frame   = document.getElementById('guideFrame');
+  var loading = document.getElementById('guideLoading');
   var closeBtn= modal.querySelector('.guide-modal-close');
   var opener  = null;          // the element that opened the dialog, to give focus back
-  var loaded  = false;
+  var settled = false;         // the guide has either arrived or failed
+
+  function showFrame() {
+    if (settled) return;
+    settled = true;
+    loading.hidden = true;
+    frame.hidden = false;
+  }
 
   // The guide lives next to this file. If it has been moved, say so instead of
-  // showing an empty white box.
+  // leaving the spinner turning for ever.
   function showLoadError() {
-    var box = document.createElement('p');
-    box.style.cssText = 'margin:auto;padding:24px;font-size:0.92rem;color:#555;text-align:center;';
-    box.textContent = document.documentElement.lang === 'de'
+    if (settled) return;
+    settled = true;
+    frame.remove();
+    loading.textContent = document.documentElement.lang === 'de'
       ? 'Die Anleitung (odigos-e-proxeneio.html) konnte nicht geladen werden.'
       : 'Ο οδηγός (odigos-e-proxeneio.html) δεν ήταν δυνατό να φορτωθεί.';
-    frame.replaceWith(box);
+    loading.style.padding = '24px';
+    loading.style.textAlign = 'center';
   }
-  frame.addEventListener('load', function () { loaded = true; });
+  frame.addEventListener('load', showFrame);
   frame.addEventListener('error', showLoadError);
 
   window.openGuideModal = function () {
@@ -1469,7 +1491,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
     if (!frame.src || frame.src === window.location.href) {
       frame.src = 'odigos-e-proxeneio.html';
       // file:// and some servers never fire 'error'; fall back to a timeout check
-      window.setTimeout(function () { if (!loaded && frame.isConnected) showLoadError(); }, 6000);
+      window.setTimeout(showLoadError, 30000);
     }
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -1491,7 +1513,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
     if (!modal.classList.contains('open')) return;
     if (e.key === 'Escape') { closeGuideModal(); return; }
     if (e.key !== 'Tab') return;
-    var stops = [closeBtn].concat(frame.isConnected ? [frame] : []);
+    var stops = [closeBtn].concat(frame.isConnected && !frame.hidden ? [frame] : []);
     var i = stops.indexOf(document.activeElement);
     e.preventDefault();
     stops[(i + (e.shiftKey ? stops.length - 1 : 1) + stops.length) % stops.length].focus();
