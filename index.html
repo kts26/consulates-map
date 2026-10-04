@@ -14,7 +14,8 @@
   [hidden] { display: none !important; }
   .ic { flex-shrink: 0; }
 
-  header { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 16px; background: #003476; color: white; padding: 14px 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); position: relative; z-index: 20; }
+  header { flex: none; background: #003476; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); position: relative; z-index: 20; }
+  .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; max-width: 1320px; margin: 0 auto; padding: 14px 28px; }
   header h1 { font-size: 1.15rem; font-weight: 700; }
   header p { font-size: 0.85rem; opacity: 0.88; margin-top: 2px; }
   .lang-switch { flex: none; display: flex; border: 1px solid rgba(255,255,255,0.55); border-radius: 6px; overflow: hidden; }
@@ -135,7 +136,7 @@
   @media (max-width: 760px) {
     html, body { height: auto; }
     body { min-height: 100vh; min-height: 100dvh; }
-    header { padding: 12px 16px; }
+    .header-inner { padding: 12px 16px; }
     .container { flex-direction: column; gap: 14px; padding-top: 16px; max-width: none; box-shadow: none; }
     .sidebar { display: contents; }
     .sidebar > * { margin-left: 16px; margin-right: 16px; }
@@ -149,13 +150,15 @@
 <body>
 
 <header>
-  <div>
-    <h1 data-i18n="title">Ελληνικά Προξενεία στη Γερμανία</h1>
-    <p data-i18n="subtitle">Βρείτε το αρμόδιο προξενείο και υποβάλετε την αίτησή σας online</p>
-  </div>
-  <div class="lang-switch" role="group" aria-label="Γλώσσα / Sprache">
-    <button type="button" data-lang="el" lang="el" aria-label="Ελληνικά" aria-pressed="true">ΕΛ</button>
-    <button type="button" data-lang="de" lang="de" aria-label="Deutsch" aria-pressed="false">DE</button>
+  <div class="header-inner">
+    <div>
+      <h1 data-i18n="title">Ελληνικά Προξενεία στη Γερμανία</h1>
+      <p data-i18n="subtitle">Βρείτε το αρμόδιο προξενείο και υποβάλετε την αίτησή σας online</p>
+    </div>
+    <div class="lang-switch" role="group" aria-label="Γλώσσα / Sprache">
+      <button type="button" data-lang="el" lang="el" aria-label="Ελληνικά" aria-pressed="true">ΕΛ</button>
+      <button type="button" data-lang="de" lang="de" aria-label="Deutsch" aria-pressed="false">DE</button>
+    </div>
   </div>
 </header>
 
