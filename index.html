@@ -699,7 +699,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
   /* Desktop: information column and map share the screen 50/50, capped overall width */
   .container { flex: 1; min-height: 0; display: flex; width: 100%; max-width: 1320px; margin: 0 auto; background: white; box-shadow: 0 0 12px rgba(0,0,0,0.06); }
   .sidebar { flex: 0 0 50%; min-width: 360px; padding: 24px 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
-  #map { flex: 1; min-width: 0; z-index: 1; background: #e8ecf0; }
+  .map-pane { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  #map { flex: 1; min-width: 0; min-height: 0; z-index: 1; background: #e8ecf0; }
 
   .intro { font-size: 0.93rem; line-height: 1.55; color: #444; }
 
@@ -775,7 +776,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .map-reset:hover { background: #f0f4ff; }
   .reset-row { display: flex; }
   .reset-row[hidden] { display: none; }
-  .map-title { position: absolute; top: 30px; left: 50%; transform: translateX(-50%); z-index: 800; margin: 0; font-size: clamp(0.9rem, 2.4vw, 1.2rem); font-weight: 700; color: #003476; white-space: nowrap; pointer-events: none; text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 6px #fff, 0 0 10px #fff; }
+  /* A solid chip, not glowing text: a browser's forced dark mode recolours
+     background and text together, but leaves text-shadow untouched. */
+  /* A heading above the map, not an overlay: nothing can ever cover the country,
+     at any window shape, and the browser's forced dark mode recolours it like any
+     other text. */
+  .map-title { flex: none; margin: 0; padding: 12px 16px 10px; font-size: clamp(0.95rem, 1.5vw, 1.05rem); font-weight: 700; color: #003476; text-align: center; letter-spacing: 0.01em; }
   .consulate-tooltip { background: rgba(0,52,118,0.92); color: white; border: none; border-radius: 6px; padding: 6px 10px; font-size: 0.85rem; font-weight: 600; box-shadow: 0 2px 8px rgba(0,0,0,0.25); white-space: nowrap; }
   .consulate-tooltip::before { border-top-color: rgba(0,52,118,0.92); }
   .consulate-pin { background: none; border: none; }
@@ -817,7 +823,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     body { display: block; }
     .container { display: block; max-width: none; box-shadow: none; }
     .sidebar { display: block; width: 100%; min-width: 0; padding: 0; overflow: visible; }
-    #map, .lang-switch, .search-box, .steps, .reset-row, .consulates,
+    .map-pane, .lang-switch, .search-box, .steps, .reset-row, .consulates,
     .disambiguation, .error-msg, #guideModal { display: none !important; }
     header { box-shadow: none; }
     .header-inner { padding: 0 0 10px; }
@@ -839,7 +845,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
     .sidebar > * { margin-left: 16px; margin-right: 16px; }
     .consulate-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .consulates { order: 1; margin-top: 0; margin-bottom: 0; }
-    #map { order: 2; flex: none; height: 55vh; height: 55dvh; min-height: 300px; }
+    .map-pane { order: 2; }
+    #map { flex: none; height: 55vh; height: 55dvh; min-height: 300px; }
+    .map-title { padding: 10px 16px 8px; line-height: 1.3; }
     .data-note { order: 3; margin-top: 0; padding: 0 0 16px; }
   }
 </style>
@@ -927,7 +935,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
     <p class="data-note"><span data-i18n="dataLead">Ταχυδρομικοί κώδικες (ενημέρωση Οκτωβρίου 2026):</span> <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a> (ODbL) <span data-i18n="via">μέσω</span> <a href="https://github.com/openpotato/openplzapi.data" target="_blank" rel="noopener noreferrer">OpenPLZ API</a>, <a href="https://www.geonames.org" target="_blank" rel="noopener noreferrer">GeoNames</a> (CC BY 4.0). <span data-i18n="dataLicense">Ο πίνακας ΤΚ της σελίδας διατίθεται με άδεια ODbL.</span> <span data-i18n="bordersLead">Όρια κρατιδίων:</span> © GeoBasis-DE / <a href="https://www.bkg.bund.de" target="_blank" rel="noopener noreferrer">BKG</a> (2026), <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="noopener noreferrer">dl-de/by-2-0</a> (Daten verändert).</p>
   </div>
 
-  <div id="map"></div>
+  <div class="map-pane">
+    <h2 class="map-title" data-i18n="mapTitle">Περιοχές αρμοδιότητας προξενείων</h2>
+    <div id="map"></div>
+  </div>
 </div>
 
 <script id="app-data">
@@ -1109,27 +1120,25 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
 
   // Germany fills the map frame on every screen size
   const HOME_BOUNDS = blLayer.getBounds();
-  // Like fitBounds with equal padding (same zoom), but the content is moved down into
-  // whatever vertical room is spare (max 50px), so the map title sits clear of it.
-  // If there is no spare room nothing moves: the map never shrinks and is never cropped.
-  function fitLow(bounds, pad) {
+  // Like fitBounds with equal padding: the area is centred in the pane at the largest
+  // zoom that still fits it. It used to be pushed down to clear the old floating map
+  // title; the title is a heading above the map now, so nothing has to make room.
+  function fitArea(bounds, pad) {
     const zoom = map.getBoundsZoom(bounds, false, L.point(pad * 2, pad * 2));
     const nw = map.project(bounds.getNorthWest(), zoom);
     const se = map.project(bounds.getSouthEast(), zoom);
-    const spare = Math.max(0, map.getSize().y - 2 * pad - (se.y - nw.y));
-    const shift = Math.min(spare / 2, 50);
-    const centre = nw.add(se).divideBy(2).subtract(L.point(0, shift));
+    const centre = nw.add(se).divideBy(2);
     map.setView(map.unproject(centre, zoom), zoom);
   }
-  function fitHome() { lastBounds = null; fitLow(HOME_BOUNDS, 12); }
+  function fitHome() { lastBounds = null; fitArea(HOME_BOUNDS, 12); }
   fitHome();
   map.on('resize', () => {
-    if (lastBounds) fitLow(lastBounds, 30);
-    else fitLow(HOME_BOUNDS, 12);
+    if (lastBounds) fitArea(lastBounds, 30);
+    else fitArea(HOME_BOUNDS, 12);
   });
 
   // ---- Map title, top centre (not clickable, does not block the map)
-  const mapTitle = L.DomUtil.create('div', 'map-title', map.getContainer());
+  const mapTitle = document.querySelector('.map-title');
 
   // ---- Pins at the consulates' street addresses (not clickable)
   const pins = {};
@@ -1228,7 +1237,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
       }
     });
     setPinState(key);
-    if (bounds) { lastBounds = bounds; fitLow(bounds, 30); }
+    if (bounds) { lastBounds = bounds; fitArea(bounds, 30); }
   }
 
   // ---- Result card
@@ -1520,6 +1529,5 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
   });
 })();
 </script>
-<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "81c66ca7215d45c4b3d4a42911aec1a3"}'></script><!-- End Cloudflare Web Analytics -->
 </body>
 </html>
