@@ -792,7 +792,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .consulate-pin.active .pin-label { background: #003476; color: white; }
   .city-label { background: none; border: none; pointer-events: none; }
   .city-label .city-dot { position: absolute; left: 1px; top: 1px; width: 4px; height: 4px; border-radius: 50%; background: #5f6b7a; opacity: 0.6; }
-  .city-label .city-name { position: absolute; left: 8px; top: -6px; font-size: 10.5px; color: #4f5b69; opacity: 0.75; white-space: nowrap; text-shadow: 0 0 2px #fff, 0 0 2px #fff, 0 0 3px #fff; }
+  /* A faint backing rather than a white glow: a browser's forced dark mode recolours
+     background and text together, but leaves text-shadow white. */
+  .city-label .city-name { position: absolute; left: 5px; top: -6px; font-size: 10.5px; color: #5a6673; white-space: nowrap; background: rgba(255,255,255,0.72); padding: 0 3px; border-radius: 3px; }
 
   button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #f2a900; outline-offset: 2px; }
 
