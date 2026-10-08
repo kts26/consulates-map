@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Οδηγός e-proxeneio | Leitfaden e-proxeneio</title>
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' file:; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap');
+
 :root {
   --green-dark:   #1b5e3b;
   --green-mid:    #2e7d52;
@@ -25,7 +26,7 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, 'Source Sans 3', Arial, sans-serif;
+  font-family: 'Source Sans 3', system-ui, sans-serif;
   font-size: 16px;
   line-height: 1.65;
   color: var(--text);
@@ -206,6 +207,8 @@ body {
 .warning-box p + p { margin-top: 0.35rem; }
 .warning-box strong { color: var(--orange); }
 
+.hl { color: #c0392b; font-weight: 700; }
+
 .info-box {
   background: var(--blue-soft);
   border-left: 4px solid #4a80b8;
@@ -374,7 +377,7 @@ hr.section-rule { border: none; border-top: 1px solid var(--border); margin: 1.3
 
     <div class="info-box">Αν μπήκατε στο e-proxeneio μέσω του συνδέσμου της ιστοσελίδας μας, το προξενείο σας έχει ήδη επιλεγεί. Σε αυτή την περίπτωση επιλέγετε κατευθείαν την αίτηση που χρειάζεστε, και η σύνδεση (με email ή TaxisNet) θα σας ζητηθεί όταν ξεκινήσετε να τη συμπληρώνετε.</div>
 
-    <p>Στην διεύθυνση <strong><a href="https://e-proxeneio.mfa.gr/ypex" target="_blank" rel="noopener noreferrer">https://e-proxeneio.mfa.gr/ypex</a></strong> επιλέγετε <strong>«Σύνδεση»</strong> και <strong>«Είσοδος Πολίτη»</strong>.</p>
+    <p>Στην διεύθυνση <strong><a href="https://e-proxeneio.mfa.gr/ypex">https://e-proxeneio.mfa.gr/ypex</a></strong> επιλέγετε <strong>«Σύνδεση»</strong> και <strong>«Είσοδος Πολίτη»</strong>.</p>
     <div class="screenshot-row">
       <div class="screenshot-wrap narrow"><img src="img/shot-01.webp" alt="" class="screenshot" width="274" height="124" loading="lazy" decoding="async"><div class="screenshot-caption">«Σύνδεση»</div></div>
       <div class="screenshot-wrap narrow"><img src="img/shot-02.webp" alt="" class="screenshot" width="243" height="125" loading="lazy" decoding="async"><div class="screenshot-caption">«Είσοδος Πολίτη»</div></div>
@@ -399,7 +402,7 @@ hr.section-rule { border: none; border-top: 1px solid var(--border); margin: 1.3
 
     <div class="warning-box">
       <div class="w-label">⚠ Προσοχή</div>
-      <p>Από την στιγμή που υποβάλετε την αίτηση μπαίνετε πάντα <strong>με τον ίδιο τρόπο</strong> στον λογαριασμό σας και ελέγχετε τόσο την αίτηση (στο σημείο <strong>Ιστορικό αίτησης</strong>), όσο και τα <strong>μηνύματα</strong>. Εκεί περιγράφονται η εξέλιξη και τυχόν διορθώσεις ή συμπληρώσεις που πρέπει να κάνετε στην αίτησή σας.</p>
+      <p>Από την στιγμή που υποβάλετε την αίτηση μπαίνετε πάντα <strong>με τον ίδιο τρόπο εισόδου</strong> στον λογαριασμό σας και ελέγχετε τόσο την αίτηση (στο σημείο <strong>Ιστορικό αίτησης</strong>), όσο και τα <strong>μηνύματα</strong>. Εκεί περιγράφονται η εξέλιξη και τυχόν διορθώσεις ή συμπληρώσεις που πρέπει να κάνετε στην αίτησή σας.</p>
     </div>
 
     <div class="screenshot-wrap full"><img src="img/shot-08.webp" alt="" class="screenshot" width="601" height="164" loading="lazy" decoding="async"><div class="screenshot-caption">Η σελίδα «Μηνύματα»</div></div>
@@ -411,8 +414,9 @@ hr.section-rule { border: none; border-top: 1px solid var(--border); margin: 1.3
 
   <div class="section-header"><h2><span class="section-num">2</span>Ραντεβού</h2></div>
   <div class="section-body">
-    <p>Για να κλείσετε ραντεβού θα πρέπει απαραιτήτως πρώτα να <strong>συμπληρώσετε την αίτησή σας</strong> στο e-proxeneio. Αν για τη διεκπεραίωσή της απαιτείται <strong>αυτοπρόσωπη παρουσία</strong>, θα σας δοθεί μέσα από αυτήν, κατά το στάδιο της επεξεργασίας της, η δυνατότητα να κλείσετε ραντεβού. Σε αυτή την περίπτωση θα εμφανιστεί στην αίτησή σας ένα κουμπί, όπως δείχνει η εικόνα.</p>
+    <p>Για να κλείσετε ραντεβού θα πρέπει απαραιτήτως πρώτα να <strong>συμπληρώσετε και να αποστείλετε την αίτησή σας</strong> στο e-proxeneio. Αν για τη διεκπεραίωσή της απαιτείται <strong>αυτοπρόσωπη παρουσία</strong>, θα σας δοθεί μέσα από αυτήν, κατά το στάδιο της επεξεργασίας της από την Αρχή, η δυνατότητα να κλείσετε ραντεβού. Σε αυτή την περίπτωση θα εμφανιστεί στην αίτησή σας ένα κουμπί, όπως δείχνει η εικόνα.</p>
     <div class="screenshot-wrap medium"><img src="img/shot-10.webp" alt="" class="screenshot" width="609" height="474" loading="lazy" decoding="async"><div class="screenshot-caption">Όταν απαιτείται αυτοπρόσωπη παρουσία, εμφανίζεται στην αίτησή σας το κουμπί «ΝΕΟ ΡΑΝΤΕΒΟΥ», για να κλείσετε ραντεβού την ημερομηνία και ώρα που σας εξυπηρετεί</div></div>
+    <div class="info-box">Το ραντεβού εμφανίζεται <span class="hl">μέσα</span> στην αίτησή σας και όχι στην επιλογή <strong>«Ραντεβού»</strong> του αρχικού μενού.</div>
 
     <p>Πατώντας το θα εμφανιστεί η επόμενη εικόνα, με τις <strong>ημερομηνίες και τις ώρες που είναι διαθέσιμες</strong>:</p>
     <div class="screenshot-wrap medium"><img src="img/shot-11.webp" alt="" class="screenshot" width="1190" height="883" loading="lazy" decoding="async"></div>
@@ -426,7 +430,8 @@ hr.section-rule { border: none; border-top: 1px solid var(--border); margin: 1.3
   <div class="section-header"><h2><span class="section-num">3</span>Διόρθωση Αίτησης</h2></div>
   <div class="section-body">
     <p>Στην περίπτωση που η αίτησή σας χρειάζεται διόρθωση, θα σας αποσταλεί μήνυμα το οποίο θα φαίνεται:</p>
-    <div class="callout-group"><div class="callout-item"><span class="callout-dot green"></span><span>στο <strong>email</strong> σας,</span></div><div class="callout-item"><span class="callout-dot green"></span><span>στα <strong>μηνύματα</strong> του προσωπικού σας χώρου στο e-proxeneio,</span></div><div class="callout-item"><span class="callout-dot green"></span><span>στο <strong>ιστορικό</strong> της αίτησής σας.</span></div></div>
+    <div class="callout-group"><div class="callout-item"><span class="callout-dot green"></span><span>στο <strong>email</strong> σας,</span></div><div class="callout-item"><span class="callout-dot green"></span><span>στα <strong>μηνύματα</strong> του προσωπικού σας χώρου στο e-proxeneio,</span></div><div class="callout-item"><span class="callout-dot green"></span><span>στο <strong>ιστορικό</strong> της αίτησής σας, που βρίσκεται στη <strong>δεξιά στήλη</strong> της αίτησής σας.</span></div></div>
+    <div class="screenshot-wrap medium"><img src="img/shot-16.webp" alt="" class="screenshot" width="427" height="607" loading="lazy" decoding="async"><div class="screenshot-caption">Το «Ιστορικό αίτησης» στη δεξιά στήλη της αίτησης: εκεί καταγράφεται κάθε βήμα της αίτησής σας, με ημερομηνία και ώρα</div></div>
     <div class="warning-box">
       <div class="w-label">⚠ Προσοχή</div>
       <p>Παρακαλούμε να ελέγχετε κατά περιόδους <strong>και τα τρία</strong>, γιατί ορισμένες φορές τα email μπορεί να καθυστερήσουν ή και να τοποθετηθούν στα <strong>ανεπιθύμητα (spam)</strong> από τον πάροχο του ηλεκτρονικού σας ταχυδρομείου.</p>
@@ -445,7 +450,7 @@ hr.section-rule { border: none; border-top: 1px solid var(--border); margin: 1.3
 
     <div class="warning-box">
       <div class="w-label">⚠ Προσοχή</div>
-      <p>Αν δεν πατήσετε το κουμπί <strong>«Υποβολή»</strong>, <strong>καμία διόρθωση</strong> δεν θα φανεί στην αίτησή σας και δεν θα μπορεί να προχωρήσει η διαδικασία από την πλευρά της Αρχής.</p>
+      <p>Αν δεν πατήσετε το κουμπί <strong>«Υποβολή»</strong>, δεν θα γίνει <strong>καμία διόρθωση</strong> στην αίτησή σας και δεν θα μπορεί να προχωρήσει η διαδικασία από την πλευρά της Αρχής.</p>
     </div>
   </div>
 
@@ -459,7 +464,7 @@ hr.section-rule { border: none; border-top: 1px solid var(--border); margin: 1.3
 
     <div class="info-box">Wenn Sie das e-proxeneio über den Link auf unserer Webseite aufgerufen haben, ist Ihr Konsulat bereits ausgewählt. In diesem Fall wählen Sie direkt den gewünschten Antrag aus; die Anmeldung (per E-Mail oder TaxisNet) wird erst verlangt, wenn Sie mit dem Ausfüllen beginnen.</div>
 
-    <p>Rufen Sie <strong><a href="https://e-proxeneio.mfa.gr/ypex" target="_blank" rel="noopener noreferrer">https://e-proxeneio.mfa.gr/ypex</a></strong> auf und wählen Sie <strong>„Σύνδεση"</strong> (Anmelden) und anschließend <strong>„Είσοδος Πολίτη"</strong> (Bürgeranmeldung).</p>
+    <p>Rufen Sie <strong><a href="https://e-proxeneio.mfa.gr/ypex">https://e-proxeneio.mfa.gr/ypex</a></strong> auf und wählen Sie <strong>„Σύνδεση"</strong> (Anmelden) und anschließend <strong>„Είσοδος Πολίτη"</strong> (Bürgeranmeldung).</p>
     <div class="screenshot-row">
       <div class="screenshot-wrap narrow"><img src="img/shot-01.webp" alt="" class="screenshot" width="274" height="124" loading="lazy" decoding="async"><div class="screenshot-caption">„Σύνδεση" (Anmelden)</div></div>
       <div class="screenshot-wrap narrow"><img src="img/shot-02.webp" alt="" class="screenshot" width="243" height="125" loading="lazy" decoding="async"><div class="screenshot-caption">„Είσοδος Πολίτη" (Bürgeranmeldung)</div></div>
@@ -484,7 +489,7 @@ hr.section-rule { border: none; border-top: 1px solid var(--border); margin: 1.3
 
     <div class="warning-box">
       <div class="w-label">⚠ Wichtig</div>
-      <p>Nach der Einreichung melden Sie sich immer <strong>auf dieselbe Weise</strong> in Ihrem Konto an und prüfen sowohl den Antrag (unter <strong>„Ιστορικό αίτησης"</strong> – Antragsverlauf) als auch die <strong>Nachrichten</strong>. Dort werden der Bearbeitungsstand sowie etwaige Korrekturen oder Ergänzungen beschrieben, die Sie an Ihrem Antrag vornehmen müssen.</p>
+      <p>Nach der Einreichung melden Sie sich immer <strong>auf demselben Anmeldeweg</strong> in Ihrem Konto an und prüfen sowohl den Antrag (unter <strong>„Ιστορικό αίτησης"</strong> – Antragsverlauf) als auch die <strong>Nachrichten</strong>. Dort werden der Bearbeitungsstand sowie etwaige Korrekturen oder Ergänzungen beschrieben, die Sie an Ihrem Antrag vornehmen müssen.</p>
     </div>
 
     <div class="screenshot-wrap full"><img src="img/shot-08.webp" alt="" class="screenshot" width="601" height="164" loading="lazy" decoding="async"><div class="screenshot-caption">Die Seite „Μηνύματα" (Nachrichten)</div></div>
@@ -496,8 +501,9 @@ hr.section-rule { border: none; border-top: 1px solid var(--border); margin: 1.3
 
   <div class="section-header"><h2><span class="section-num">2</span>Termin</h2></div>
   <div class="section-body">
-    <p>Um einen Termin zu vereinbaren, müssen Sie unbedingt zuerst <strong>Ihren Antrag</strong> im e-proxeneio <strong>ausfüllen</strong>. Ist für die Bearbeitung <strong>persönliches Erscheinen</strong> erforderlich, erhalten Sie im Laufe der Bearbeitung über den Antrag selbst die Möglichkeit, einen Termin zu buchen. In diesem Fall erscheint in Ihrem Antrag eine Schaltfläche, wie die Abbildung zeigt.</p>
+    <p>Um einen Termin zu vereinbaren, müssen Sie unbedingt zuerst <strong>Ihren Antrag</strong> im e-proxeneio <strong>ausfüllen und absenden</strong>. Ist für die Bearbeitung <strong>persönliches Erscheinen</strong> erforderlich, erhalten Sie im Laufe der Bearbeitung durch die Behörde über den Antrag selbst die Möglichkeit, einen Termin zu buchen. In diesem Fall erscheint in Ihrem Antrag eine Schaltfläche, wie die Abbildung zeigt.</p>
     <div class="screenshot-wrap medium"><img src="img/shot-10.webp" alt="" class="screenshot" width="609" height="474" loading="lazy" decoding="async"><div class="screenshot-caption">Ist persönliches Erscheinen erforderlich, erscheint in Ihrem Antrag die Schaltfläche „ΝΕΟ ΡΑΝΤΕΒΟΥ" (Neuer Termin), mit der Sie einen Termin zu dem für Sie passenden Datum und Uhrzeit buchen</div></div>
+    <div class="info-box">Der Termin erscheint <span class="hl">innerhalb</span> Ihres Antrags und nicht unter dem Menüpunkt <strong>„Ραντεβού"</strong> (Termine) im Hauptmenü.</div>
 
     <p>Wenn Sie darauf klicken, erscheint die folgende Ansicht mit den <strong>verfügbaren Tagen und Uhrzeiten</strong>:</p>
     <div class="screenshot-wrap medium"><img src="img/shot-11.webp" alt="" class="screenshot" width="1190" height="883" loading="lazy" decoding="async"><div class="screenshot-caption">Verfügbare Termine je Datum</div></div>
@@ -511,7 +517,8 @@ hr.section-rule { border: none; border-top: 1px solid var(--border); margin: 1.3
   <div class="section-header"><h2><span class="section-num">3</span>Antrag korrigieren</h2></div>
   <div class="section-body">
     <p>Muss Ihr Antrag korrigiert werden, erhalten Sie eine Nachricht, die angezeigt wird:</p>
-    <div class="callout-group"><div class="callout-item"><span class="callout-dot green"></span><span>per <strong>E-Mail</strong>,</span></div><div class="callout-item"><span class="callout-dot green"></span><span>in den <strong>Nachrichten</strong> Ihres persönlichen Bereichs im e-proxeneio,</span></div><div class="callout-item"><span class="callout-dot green"></span><span>im <strong>Verlauf</strong> Ihres Antrags.</span></div></div>
+    <div class="callout-group"><div class="callout-item"><span class="callout-dot green"></span><span>per <strong>E-Mail</strong>,</span></div><div class="callout-item"><span class="callout-dot green"></span><span>in den <strong>Nachrichten</strong> Ihres persönlichen Bereichs im e-proxeneio,</span></div><div class="callout-item"><span class="callout-dot green"></span><span>im <strong>Verlauf</strong> Ihres Antrags, der sich in der <strong>rechten Spalte</strong> Ihres Antrags befindet.</span></div></div>
+    <div class="screenshot-wrap medium"><img src="img/shot-16.webp" alt="" class="screenshot" width="427" height="607" loading="lazy" decoding="async"><div class="screenshot-caption">Das „Ιστορικό αίτησης" (Antragsverlauf) in der rechten Spalte des Antrags: Dort wird jeder Schritt Ihres Antrags mit Datum und Uhrzeit festgehalten</div></div>
     <div class="warning-box">
       <div class="w-label">⚠ Wichtig</div>
       <p>Bitte prüfen Sie regelmäßig <strong>alle drei Stellen</strong>, da sich E-Mails manchmal verzögern oder von Ihrem E-Mail-Anbieter in den <strong>Spam-Ordner</strong> verschoben werden können.</p>
@@ -530,7 +537,7 @@ hr.section-rule { border: none; border-top: 1px solid var(--border); margin: 1.3
 
     <div class="warning-box">
       <div class="w-label">⚠ Wichtig</div>
-      <p>Wenn Sie nicht auf <strong>„Υποβολή"</strong> klicken, wird <strong>keine Korrektur</strong> in Ihrem Antrag sichtbar und die Behörde kann das Verfahren nicht fortsetzen.</p>
+      <p>Wenn Sie nicht auf <strong>„Υποβολή"</strong> klicken, wird <strong>keine Korrektur</strong> an Ihrem Antrag vorgenommen und die Behörde kann das Verfahren nicht fortsetzen.</p>
     </div>
   </div>
 
