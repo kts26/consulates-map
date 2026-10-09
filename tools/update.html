@@ -124,6 +124,7 @@ const Core = (function () {
   const MONTHS_DE = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
   const MAX_NAMES = 3;          // place names stored per postal code
   const MIN_EXTRA_STREETS = 3;  // a second state of the SAME consulate is listed only with at least this many streets
+  const MANY_LOCALITIES = 10;   // more places than this in one state of a split code = suspicious data, not a border village
   const MAX_DROP = 0.05;        // refuse if the number of codes falls by more than 5%
   const MAX_RISE = 0.10;        // warn if it rises by more than 10%
 
@@ -236,6 +237,14 @@ const Core = (function () {
     states.forEach(s => (rec.names.get(s) || new Map()).forEach((n, name) => all.set(name, (all.get(name) || 0) + n)));
     return Array.from(all.entries()).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).map(e => e[0]);
   }
+  // Every place of ONE state, most streets first. Used for the city choice of a split code,
+  // where a missing name would leave a citizen unable to answer: no cap here, unlike `o`.
+  function localitiesOf(rec, state) {
+    const m = rec.names.get(state) || new Map();
+    return Array.from(m.entries()).filter(e => e[0])
+      .sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).map(e => e[0]);
+  }
+
   function plainEntry(states, names) {
     const entry = { b: states.length === 1 ? states[0] : states.slice().sort() };
     if (names.length) entry.o = names.slice(0, MAX_NAMES);
@@ -266,11 +275,24 @@ const Core = (function () {
       if (!rec) return;
       const ranked = sortedStates(rec);
       const mainState = ranked[0][0], mainConsulate = blConsulate[mainState];
+
+      // Two consulates in one code: the program must never pick one. It asks for the city instead,
+      // because a city belongs to exactly one state. The number of streets decides nothing here.
+      if (ranked.slice(1).some(([s]) => blConsulate[s] !== mainConsulate)) {
+        const choices = [];
+        ranked.forEach(([s]) => {
+          const places = localitiesOf(rec, s);
+          if (!places.length) { report.noPlaceName.push(plz + ' (' + s + ')'); places.push(s); }
+          if (places.length > MANY_LOCALITIES) report.manyLocalities.push(plz + ' (' + s + ': ' + places.length + ')');
+          places.forEach(ort => choices.push({ ort: ort, bl: s, c: blConsulate[s] }));
+        });
+        table[plz] = { ambiguous: true, auto: true, choices: choices };
+        report.candidates.push({ plz: plz, counts: ranked.map(([st, k]) => st + ': ' + k).join(', ') });
+        return;
+      }
+
       const states = [mainState];
-      ranked.slice(1).forEach(([s, n]) => {
-        if (blConsulate[s] === mainConsulate) { if (n >= MIN_EXTRA_STREETS) states.push(s); }
-        else report.candidates.push({ plz: plz, counts: ranked.map(([st, k]) => st + ': ' + k).join(', ') });
-      });
+      ranked.slice(1).forEach(([s, n]) => { if (n >= MIN_EXTRA_STREETS) states.push(s); });
       table[plz] = plainEntry(states, namesFor(rec, states));
     });
     return table;
@@ -329,7 +351,7 @@ const Core = (function () {
     if (missingStates.length) { fatal.push('Στο αρχείο OpenPLZ λείπουν εντελώς τα κρατίδια: ' + missingStates.join(', ') + '. Το αρχείο είναι πιθανότατα ελλιπές.'); return fail(); }
 
     // ---- New table
-    const report = { candidates: [], fromGeoNames: [] };
+    const report = { candidates: [], fromGeoNames: [], manyLocalities: [], noPlaceName: [] };
     const newMap = buildTable(op.map, gn ? gn.map : null, overrides, blConsulate, report);
     const oldKeys = Object.keys(oldMap), newKeys = Object.keys(newMap);
     const oldCount = oldKeys.length, newCount = newKeys.length;
@@ -369,7 +391,8 @@ const Core = (function () {
     return {
       ok: true, fatal: fatal, warnings: warnings, html: html, oldMap: oldMap, newMap: newMap, blConsulate: blConsulate,
       stats: { oldCount, newCount, ambiguousCount, added, removed, consulateChanged, otherChanged,
-               candidates: report.candidates, fromGeoNames: report.fromGeoNames, openplzRows: op.rows, unchanged: html === htmlText }
+               candidates: report.candidates, fromGeoNames: report.fromGeoNames, manyLocalities: report.manyLocalities,
+               noPlaceName: report.noPlaceName, openplzRows: op.rows, unchanged: html === htmlText }
     };
   }
 
@@ -454,11 +477,16 @@ if (typeof module !== 'undefined') module.exports = Core;
     out.appendChild(table);
 
     if (s.candidates.length) {
-      const box = codeList('Νέοι υποψήφιοι ΤΚ σε δύο κρατίδια με διαφορετικό προξενείο', s.candidates.map(c => c.plz + ' (' + c.counts + ')'), true,
-        'Στο OpenPLZ αυτοί οι κωδικοί έχουν οδούς και σε κρατίδιο άλλου προξενείου. Η σελίδα προς το παρόν τους αποδίδει στο κρατίδιο με τις περισσότερες οδούς. ' +
-        'Ελέγξτε τους στην αναζήτηση ΤΚ της Deutsche Post (με τον ΤΚ ή με μια από τις οδούς). Αν είναι πράγματι διπλοί, προσθέστε τους στη λίστα «plzOverrides» του index.html (βλ. οδηγίες README) και ξανατρέξτε τον έλεγχο.');
+      const box = codeList('ΤΚ που μπήκαν αυτόματα σε επιλογή πόλης — χρειάζονται επαλήθευση', s.candidates.map(c => c.plz + ' (' + c.counts + ')'), true,
+        'Στο OpenPLZ αυτοί οι κωδικοί έχουν οδούς σε δύο κρατίδια με διαφορετικό προξενείο. Η σελίδα ζητά ήδη από τον πολίτη να διαλέξει πόλη, οπότε δεν δίνει λάθος απάντηση σε κανέναν. ' +
+        'Μένει όμως να επιβεβαιωθεί ότι το μοίρασμα είναι πραγματικό και δεν οφείλεται σε σφάλμα της πηγής: ελέγξτε τους στην αναζήτηση ΤΚ της Deutsche Post (με τον ΤΚ ή με μια από τις οδούς). ' +
+        'Αν είναι πράγματι διπλοί, προσθέστε τους επαληθευμένους στη λίστα «plzOverrides» του index.html με ακριβή ονόματα πόλεων· αν είναι σφάλμα, προσθέστε τους εκεί ως «single» (βλ. οδηγίες README) και ξανατρέξτε τον έλεγχο.');
       out.appendChild(box);
     }
+    if (s.manyLocalities.length) out.appendChild(codeList('Ύποπτα δεδομένα: πάρα πολλές πόλεις σε ένα κρατίδιο', s.manyLocalities, true,
+      'Ένας ΤΚ μοιρασμένος σε δύο προξενεία αφορά κανονικά λίγα συνοριακά χωριά. Τόσες πόλεις σε ένα κρατίδιο δείχνουν μάλλον αλλοιωμένα δεδομένα παρά πραγματικό μοίρασμα. Ελέγξτε την πηγή πριν ανεβάσετε τη σελίδα.'));
+    if (s.noPlaceName.length) out.appendChild(codeList('ΤΚ χωρίς όνομα πόλης σε ένα κρατίδιο', s.noPlaceName, true,
+      'Στη θέση της πόλης μπήκε το όνομα του κρατιδίου, ώστε να υπάρχει επιλογή για τον πολίτη. Προσθέστε το σωστό όνομα στη λίστα «plzOverrides».'));
     if (s.consulateChanged.length) out.appendChild(codeList('Κωδικοί που αλλάζουν αρμόδιο προξενείο', s.consulateChanged, true, 'Ελέγξτε τους με τη «Σύγκριση κωδικού» παρακάτω.'));
     if (s.added.length) out.appendChild(codeList('Νέοι κωδικοί', s.added));
     if (s.removed.length) out.appendChild(codeList('Κωδικοί που καταργούνται', s.removed));
