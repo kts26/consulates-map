@@ -877,7 +877,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     <div class="search-box">
       <label class="field-label" for="plzInput" data-i18n="inputLabel">Ταχυδρομικός κώδικας κατοικίας</label>
       <div class="search-row">
-        <input type="text" id="plzInput" placeholder="π.χ. 80331" data-i18n-placeholder="placeholder" maxlength="5" inputmode="numeric" autocomplete="postal-code"/>
+        <input type="text" id="plzInput" placeholder="π.χ. 80331" data-i18n-placeholder="placeholder" maxlength="16" inputmode="numeric" autocomplete="postal-code"/>
         <button type="button" id="plzBtn" aria-label="Αναζήτηση" data-i18n-aria="searchAria"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 21l-4.35-4.35"/><circle cx="11" cy="11" r="7"/></svg></button>
       </div>
       <p class="plz-hint"><span data-i18n="hint">Δεν γνωρίζετε τον ΤΚ σας;</span> <a href="https://www.postdirekt.de/plzserver/" target="_blank" rel="noopener noreferrer" data-i18n="hintLink">Βρείτε τον εδώ ↗</a></p>
@@ -895,9 +895,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <ol>
         <li><span class="num">1</span><span data-i18n="step1">Βρείτε το αρμόδιο προξενείο με τον ταχυδρομικό σας κώδικα.</span></li>
         <li><span class="num">2</span><span data-i18n="step2">Μεταβείτε στο e-proxeneio του προξενείου σας.</span></li>
-        <li><span class="num">3</span><span data-i18n="step3">Υποβάλετε την αίτησή σας online· αν χρειάζεται αυτοπρόσωπη παρουσία, το ραντεβού κλείνεται μέσα από την αίτηση.</span></li>
+        <li><span class="num">3</span><span data-i18n="step3">Υποβάλετε την αίτησή σας online· αν χρειάζεται αυτοπρόσωπη παρουσία, το προξενείο σάς δίνει τη δυνατότητα να κλείσετε ραντεβού μέσα από την αίτηση.</span></li>
+        <li><span class="num">4</span><span data-i18n="step4">Μετά την υποβολή, παρακολουθείτε την πορεία της αίτησης και τα μηνύματα του προξενείου μέσα από το e-proxeneio.</span></li>
       </ol>
-      <p class="guide-line"><span data-i18n="guideLead">Πρώτη φορά στο e-proxeneio;</span> <button type="button" class="guide-modal-btn" onclick="openGuideModal()"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span data-i18n="guideLink">Οδηγός χρήσης (HTML/PDF)</span></button></p>
+      <p class="guide-line"><span data-i18n="guideLead">Χρειάζεστε βοήθεια με την υποβολή αίτησης, το ραντεβού ή μια διόρθωση;</span> <button type="button" class="guide-modal-btn" onclick="openGuideModal()"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span data-i18n="guideLink">Οδηγός χρήσης (HTML/PDF)</span></button></p>
     </div>
 
     <div class="result-card" id="resultCard" aria-live="polite">
@@ -907,11 +908,11 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
       <a class="eprox-btn" id="btnEproxeneio" href="#" target="_blank" rel="noopener noreferrer">
         <svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18"/></svg>
-        <span class="txt"><strong data-i18n="eproxTitle">Μετάβαση στο e-proxeneio</strong><small data-i18n="eproxSub">Υποβολή αιτήσεων online· το ραντεβού κλείνεται μέσα από την αίτηση</small></span>
+        <span class="txt"><strong data-i18n="eproxTitle">Μετάβαση στο e-proxeneio</strong><small data-i18n="eproxSub">Υποβολή αιτήσεων online· ραντεβού μέσα από την αίτηση</small></span>
         <svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
       </a>
       <div class="guide">
-        <span><span data-i18n="guideLead">Πρώτη φορά στο e-proxeneio;</span> <button type="button" class="guide-modal-btn" onclick="openGuideModal()"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span data-i18n="guideLink">Οδηγός χρήσης (HTML/PDF)</span></button></span>
+        <span><span data-i18n="guideLead">Χρειάζεστε βοήθεια με την υποβολή αίτησης, το ραντεβού ή μια διόρθωση;</span> <button type="button" class="guide-modal-btn" onclick="openGuideModal()"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span data-i18n="guideLink">Οδηγός χρήσης (HTML/PDF)</span></button></span>
       </div>
 
       <div class="contact">
@@ -1012,8 +1013,8 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
       stateMany: 'Κρατίδια: ',
       more: '+{n} ακόμη',
       eproxTitle: 'Μετάβαση στο e-proxeneio',
-      eproxSub: 'Υποβολή αιτήσεων online· το ραντεβού κλείνεται μέσα από την αίτηση',
-      guideLead: 'Πρώτη φορά στο e-proxeneio;',
+      eproxSub: 'Υποβολή αιτήσεων online· ραντεβού μέσα από την αίτηση',
+      guideLead: 'Χρειάζεστε βοήθεια με την υποβολή αίτησης, το ραντεβού ή μια διόρθωση;',
       guideLink: 'Οδηγός χρήσης (HTML/PDF)',
       guideModalTitle: 'Οδηγός χρήσης e-proxeneio',
       guideModalClose: 'Κλείσιμο',
@@ -1025,7 +1026,8 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
       stepsTitle: 'Πώς λειτουργεί',
       step1: 'Βρείτε το αρμόδιο προξενείο με τον ταχυδρομικό σας κώδικα.',
       step2: 'Μεταβείτε στο e-proxeneio του προξενείου σας.',
-      step3: 'Υποβάλετε την αίτησή σας online· αν χρειάζεται αυτοπρόσωπη παρουσία, το ραντεβού κλείνεται μέσα από την αίτηση.',
+      step3: 'Υποβάλετε την αίτησή σας online· αν χρειάζεται αυτοπρόσωπη παρουσία, το προξενείο σάς δίνει τη δυνατότητα να κλείσετε ραντεβού μέσα από την αίτηση.',
+      step4: 'Μετά την υποβολή, παρακολουθείτε την πορεία της αίτησης και τα μηνύματα του προξενείου μέσα από το e-proxeneio.',
       dataLead: 'Ταχυδρομικοί κώδικες (ενημέρωση Οκτωβρίου 2026):',
       via: 'μέσω',
       dataLicense: 'Ο πίνακας ΤΚ της σελίδας διατίθεται με άδεια ODbL.',
@@ -1050,8 +1052,8 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
       stateMany: 'Bundesländer: ',
       more: '+{n} weitere',
       eproxTitle: 'Weiter zu e-proxeneio',
-      eproxSub: 'Anträge online stellen – Termine werden über den Antrag vereinbart',
-      guideLead: 'Zum ersten Mal bei e-proxeneio?',
+      eproxSub: 'Anträge online stellen – Termin über den Antrag',
+      guideLead: 'Brauchen Sie Hilfe beim Antrag, beim Termin oder bei einer Korrektur?',
       guideLink: 'Anleitung (HTML/PDF, auf Griechisch)',
       guideModalTitle: 'Anleitung e-proxeneio',
       guideModalClose: 'Schließen',
@@ -1063,7 +1065,8 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
       stepsTitle: 'So funktioniert es',
       step1: 'Finden Sie das zuständige Konsulat über Ihre Postleitzahl.',
       step2: 'Öffnen Sie e-proxeneio für Ihr Konsulat.',
-      step3: 'Stellen Sie Ihren Antrag online; ist persönliches Erscheinen nötig, wird der Termin über den Antrag vereinbart.',
+      step3: 'Stellen Sie Ihren Antrag online; ist persönliches Erscheinen nötig, bietet Ihnen das Konsulat über Ihren Antrag einen Termin an.',
+      step4: 'Nach dem Absenden verfolgen Sie den Stand Ihres Antrags und die Nachrichten des Konsulats in e-proxeneio.',
       dataLead: 'Postleitzahlen (Stand: Oktober 2026):',
       via: 'über',
       dataLicense: 'Die Postleitzahlen-Tabelle dieser Seite steht unter der ODbL.',
@@ -1475,6 +1478,12 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
   $('plzBtn').addEventListener('click', searchPLZ);
   $('resetBtn').addEventListener('click', resetAll);
   $('plzInput').addEventListener('keydown', e => { if (e.key === 'Enter') searchPLZ(); });
+  // Καθαρισμός ό,τι κολληθεί στο πεδίο: κρατάμε μόνο τα πρώτα 5 ψηφία
+  // (π.χ. «107 85», «D-10785», «10785 Berlin», κενά ή αόρατοι χαρακτήρες από αντιγραφή).
+  $('plzInput').addEventListener('input', function () {
+    const digits = this.value.replace(/\D+/g, '').slice(0, 5);
+    if (digits !== this.value) this.value = digits;
+  });
 
   applyLanguage();
 })();
