@@ -1191,7 +1191,8 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
     ['Χαϊδελβέργη','Heidelberg',49.3988,8.6724,7.5], ['Μένχενγκλάντμπαχ','Mönchengladbach',51.1805,6.4428,8],
     ['Γκελζενκίρχεν','Gelsenkirchen',51.5177,7.0857,9], ['Όλντενμπουργκ','Oldenburg',53.1435,8.2146,8],
     ['Όσναμπρυκ','Osnabrück',52.2799,8.0472,7], ['Ίνγκολσταντ','Ingolstadt',48.7665,11.4258,7],
-    ['Ντάρμσταντ','Darmstadt',49.8728,8.6512,7], ['Ουλμ','Ulm',48.4011,9.9876,7]
+    ['Ντάρμσταντ','Darmstadt',49.8728,8.6512,7], ['Ουλμ','Ulm',48.4011,9.9876,7],
+    ['Ζίγκεν','Siegen',50.8748,8.0243,6.25]
   ];
   const BASE_CITY_ZOOM = 5.5;   // below this, even the base cities are hidden to stay readable
   function cityIcon(city) {
@@ -1200,10 +1201,56 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
   }
   const cityMarkers = CITIES.map(city =>
     L.marker([city[2], city[3]], { icon: cityIcon(city), interactive: false, keyboard: false, zIndexOffset: -1000 }));
+  // ---- A consulate always wins: a city name that lands on a pin or its label is hidden
+  // until there is room again. Widths are measured on a canvas with the page's own font,
+  // so a name can be measured while its marker is off the map. The boxes below mirror the
+  // CSS: a city name sits at left 5 / top -6 of a 6x6 icon anchored at its centre, a pin
+  // label at left 29 / top 6 of a 26x36 icon anchored at the point.
+  const textWidth = (() => {
+    const ctx = document.createElement('canvas').getContext('2d');
+    const cache = new Map();
+    return (text, font) => {
+      const key = font + '\n' + text;
+      let w = cache.get(key);
+      if (w === undefined) { ctx.font = font; w = ctx.measureText(text).width; cache.set(key, w); }
+      return w;
+    };
+  })();
+  function labelFonts() {
+    const family = getComputedStyle(document.body).fontFamily || 'Arial, sans-serif';
+    return { city: '10.5px ' + family, pin: 'bold 11px ' + family };
+  }
+  function consulateBoxes(font) {
+    const boxes = [];
+    Object.keys(consulateInfo).forEach(key => {
+      const i = info(key);
+      const p = map.latLngToLayerPoint(i.latlng);
+      const w = textWidth(i.city, font) + 12;
+      boxes.push({ x1: p.x - 13, y1: p.y - 36, x2: p.x + 13, y2: p.y });
+      boxes.push({ x1: p.x + 16, y1: p.y - 30, x2: p.x + 16 + w, y2: p.y - 15 });
+    });
+    return boxes;
+  }
+  function cityBox(city, font) {
+    const p = map.latLngToLayerPoint([city[2], city[3]]);
+    const w = textWidth(lang === 'el' ? city[0] : city[1], font) + 6;
+    return { x1: p.x + 2, y1: p.y - 9, x2: p.x + 2 + w, y2: p.y + 4 };
+  }
+  // Strict: two chips that merely touch are fine, each has its own padding. A margin
+  // here costs real names — a 1px graze used to cost Köln and Kassel on a phone.
+  function overlaps(a, b) {
+    return a.x1 < b.x2 && b.x1 < a.x2 && a.y1 < b.y2 && b.y1 < a.y2;
+  }
   function updateCityVisibility() {
     const z = map.getZoom();
+    const fonts = labelFonts();
+    const taken = consulateBoxes(fonts.pin);
     cityMarkers.forEach((m, i) => {
-      const show = z >= (CITIES[i][4] || BASE_CITY_ZOOM);
+      let show = z >= (CITIES[i][4] || BASE_CITY_ZOOM);
+      if (show) {
+        const box = cityBox(CITIES[i], fonts.city);
+        show = !taken.some(b => overlaps(box, b));
+      }
       if (show && !map.hasLayer(m)) m.addTo(map);
       else if (!show && map.hasLayer(m)) map.removeLayer(m);
     });
@@ -1468,6 +1515,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
     Object.keys(consulateLabels).forEach(key => { consulateLabels[key].textContent = info(key).city; });
     Object.keys(pins).forEach(key => pins[key].setIcon(pinIcon(key)));
     cityMarkers.forEach((m, i) => m.setIcon(cityIcon(CITIES[i])));
+    updateCityVisibility();   // the names changed width, so the collisions changed too
     setPinState(activePin);   // new pin elements need their state again
     mapTitle.textContent = t('mapTitle');
     tooltip.remove();
