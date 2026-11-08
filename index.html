@@ -1030,6 +1030,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
   };
 
   let lang = initialLang();
+  const linkedPLZ = initialPLZ();
   // mode: null | 'error' | 'disambig' | 'result' (postal code) | 'consulate' (button) | 'state' (map click)
   let state = { mode: null };
   let activePin = null;
@@ -1040,6 +1041,25 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
     try { l = new URLSearchParams(window.location.search).get('lang'); } catch (e) { /* ignore */ }
     if (!l) { try { l = window.localStorage.getItem(LANG_KEY); } catch (e) { /* ignore */ } }
     return (l === 'de' || l === 'el') ? l : 'el';
+  }
+
+  /* Ένας σύνδεσμος της μορφής ?plz=47051 ανοίγει τη σελίδα με το
+     αποτέλεσμα ήδη εμφανισμένο, ώστε να μπορεί να σταλεί σε κάποιον. */
+  function initialPLZ() {
+    let p = null;
+    try { p = new URLSearchParams(window.location.search).get('plz'); } catch (e) { /* ignore */ }
+    return /^\d{5}$/.test(p || '') ? p : null;
+  }
+
+  /* Η διεύθυνση ακολουθεί πάντα το τι δείχνει η σελίδα, ώστε ό,τι
+     αντιγράψει ο χρήστης από τη γραμμή διευθύνσεων να είναι σωστό. */
+  function syncURL() {
+    const plz = ['result', 'disambig'].includes(state.mode) ? state.plz : null;
+    try {
+      const url = new URL(window.location.href);
+      if (plz) url.searchParams.set('plz', plz); else url.searchParams.delete('plz');
+      if (url.href !== window.location.href) window.history.replaceState(null, '', url);
+    } catch (e) { /* π.χ. file:// — ο σύνδεσμος απλώς δεν ενημερώνεται */ }
   }
 
   function t(key, vars) {
@@ -1407,6 +1427,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
     $('stepsBox').hidden = shownKey !== null;
     $('resetRow').hidden = state.mode === null;   // nothing to reset on a fresh page   // the card takes the place of "How it works"
     Object.keys(consulateButtons).forEach(key => consulateButtons[key].setAttribute('aria-pressed', String(key === shownKey)));
+    syncURL();
   }
 
   // On phones the card sits above the map: bring it into view
@@ -1527,6 +1548,11 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
 
   applyLanguage();
   document.addEventListener('DOMContentLoaded', applyLanguage, { once: true });
+
+  if (linkedPLZ) {
+    $('plzInput').value = linkedPLZ;
+    searchPLZ();
+  }
 })();
 </script>
 </body>
