@@ -739,7 +739,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .eprox-btn .txt { flex: 1; }
   .eprox-btn strong { display: block; font-size: 0.98rem; }
   .eprox-btn small { display: block; font-size: 0.78rem; opacity: 0.9; margin-top: 1px; }
-  .guide { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font-size: 0.84rem; color: #555; }
   .guide a { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; text-decoration: none; }
   .guide a:hover { text-decoration: underline; }
   .contact { margin-top: 14px; padding-top: 12px; border-top: 1px solid #e3e7ef; display: grid; gap: 7px; font-size: 0.86rem; color: #444; }
@@ -758,9 +757,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .steps ol { list-style: none; display: grid; gap: 10px; }
   .steps li { display: flex; gap: 10px; align-items: flex-start; font-size: 0.88rem; color: #444; line-height: 1.45; }
   .steps .num { flex: none; width: 22px; height: 22px; border-radius: 50%; background: #003476; color: white; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
-  .steps .guide-line { margin-top: 12px; padding-top: 10px; border-top: 1px solid #e3e7ef; font-size: 0.84rem; color: #555; }
-  .steps .guide-line a { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; text-decoration: none; }
-  .steps .guide-line a:hover { text-decoration: underline; }
 
   /* Consulate shortcuts (also the colour legend of the map), at the bottom of the column */
   .consulates { margin-top: auto; margin-bottom: auto; }   /* centred in the free space of the column */
@@ -801,10 +797,15 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
   button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #f2a900; outline-offset: 2px; }
 
-  /* Link to the guide (opens in a new tab) */
+  /* Secondary call to action: the guide, in a new tab */
   .source-note { margin-top: 0; line-height: 1.5; }
-  .guide-link-btn { display: inline-flex; align-items: center; gap: 4px; background: none; border: none; padding: 0; font: inherit; font-size: 0.84rem; font-weight: 600; color: #003476; cursor: pointer; text-decoration: none; }
-  .guide-link-btn:hover { text-decoration: underline; }
+  .guide-cta { display: flex; align-items: center; gap: 12px; margin: 0 0 8px; padding: 12px 14px; background: white; color: #185fa5; border: 1.5px solid #003476; border-radius: 8px; text-decoration: none; transition: background 0.15s; }
+  .guide-cta:hover { background: #eef3fa; }
+  .guide-cta .txt { flex: 1; }
+  .guide-cta strong { display: block; font-size: 0.98rem; font-weight: 600; }
+  .guide-cta small { display: block; font-size: 0.78rem; color: #555; margin-top: 1px; }
+  /* Στο steps δεν προηγείται το μπλε κουμπί, άρα θέλει δικό του κενό από πάνω. */
+  .steps .guide-cta { margin: 16px 0 0; }
 
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
@@ -821,7 +822,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     .result-card { display: none !important; }
     .result-card.visible { display: block !important; border: 1px solid #999; page-break-inside: avoid; }
     .eprox-btn { background: none !important; color: #000 !important; border: 1px solid #999; }
-    .eprox-btn .ic, .guide { display: none; }
+    .eprox-btn .ic, .guide-cta { display: none; }
     .detail a, .contact-links a { color: #000; text-decoration: none; }
     .data-note { font-size: 0.65rem; }
     a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 0.7em; word-break: break-all; }
@@ -886,7 +887,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
         <li><span class="num">2</span><span data-i18n="step2">Μεταβείτε στο e-proxeneio του προξενείου σας.</span></li>
         <li><span class="num">3</span><span data-i18n="step3">Υποβάλετε την αίτησή σας online· αν χρειάζεται αυτοπρόσωπη παρουσία, το ραντεβού κλείνεται μέσα από την αίτηση.</span></li>
       </ol>
-      <p class="guide-line"><span data-i18n="guideLead">Πρώτη φορά στο e-proxeneio;</span> <a class="guide-link-btn" data-guide-link href="odigos-e-proxeneio.html?lang=el" target="_blank" rel="noopener noreferrer"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span data-i18n="guideLink">Οδηγός χρήσης / Αποθήκευση ως PDF</span></a></p>
+      <a class="guide-cta" data-guide-link href="odigos-e-proxeneio.html?lang=el" target="_blank" rel="noopener noreferrer"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-2z"/><path d="M4 19.5A2 2 0 0 1 6 18h13"/><path d="M8 7h7"/><path d="M8 11h5"/></svg><span class="txt"><strong data-i18n="guideCtaTitle">Πώς υποβάλλετε αίτηση στο e-proxeneio</strong><small data-i18n="guideCtaSub">Αναλυτικός οδηγός με εικόνες · αποθήκευση ως PDF</small></span><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
     </div>
 
     <div class="result-card" id="resultCard" aria-live="polite">
@@ -899,9 +900,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
         <span class="txt"><strong data-i18n="eproxTitle">Μετάβαση στο e-proxeneio</strong><small data-i18n="eproxSub">Υποβολή αιτήσεων online· το ραντεβού κλείνεται μέσα από την αίτηση</small></span>
         <svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
       </a>
-      <div class="guide">
-        <span><span data-i18n="guideLead">Πρώτη φορά στο e-proxeneio;</span> <a class="guide-link-btn" data-guide-link href="odigos-e-proxeneio.html?lang=el" target="_blank" rel="noopener noreferrer"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span data-i18n="guideLink">Οδηγός χρήσης / Αποθήκευση ως PDF</span></a></span>
-      </div>
+      <a class="guide-cta" data-guide-link href="odigos-e-proxeneio.html?lang=el" target="_blank" rel="noopener noreferrer"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v18H6a2 2 0 0 1-2-2z"/><path d="M4 19.5A2 2 0 0 1 6 18h13"/><path d="M8 7h7"/><path d="M8 11h5"/></svg><span class="txt"><strong data-i18n="guideCtaTitle">Πώς υποβάλλετε αίτηση στο e-proxeneio</strong><small data-i18n="guideCtaSub">Αναλυτικός οδηγός με εικόνες · αποθήκευση ως PDF</small></span><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>
 
       <div class="contact">
         <div class="detail"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span id="resultAddress"></span></div>
@@ -974,8 +973,8 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
       more: '+{n} ακόμη',
       eproxTitle: 'Μετάβαση στο e-proxeneio',
       eproxSub: 'Υποβολή αιτήσεων online· το ραντεβού κλείνεται μέσα από την αίτηση',
-      guideLead: 'Πρώτη φορά στο e-proxeneio;',
-      guideLink: 'Οδηγός χρήσης / Αποθήκευση ως PDF',
+      guideCtaTitle: 'Πώς υποβάλλετε αίτηση στο e-proxeneio',
+      guideCtaSub: 'Αναλυτικός οδηγός με εικόνες · αποθήκευση ως PDF',
       nav: 'Οδηγίες μετάβασης',
       website: 'Ιστοσελίδα προξενείου',
       note: 'Σε περίπτωση αμφιβολίας για την αρμοδιότητα, επικοινωνήστε με το προξενείο.',
@@ -1011,8 +1010,8 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
       more: '+{n} weitere',
       eproxTitle: 'Weiter zu e-proxeneio',
       eproxSub: 'Anträge online stellen – Termine werden über den Antrag vereinbart',
-      guideLead: 'Zum ersten Mal bei e-proxeneio?',
-      guideLink: 'Anleitung / Als PDF speichern',
+      guideCtaTitle: 'So stellen Sie einen Antrag bei e-proxeneio',
+      guideCtaSub: 'Ausführliche Anleitung mit Bildern · als PDF',
       nav: 'Route planen',
       website: 'Website des Konsulats',
       note: 'Bei Fragen zur Zuständigkeit wenden Sie sich bitte an das Konsulat.',
