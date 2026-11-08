@@ -11,7 +11,7 @@
 <meta property="og:locale" content="el_GR">
 <meta property="og:locale:alternate" content="de_DE">
 <meta name="twitter:card" content="summary">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: file:; frame-src 'self' file:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: file:; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <style>/* required styles */
 
 .leaflet-pane,
@@ -801,38 +801,25 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
   button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #f2a900; outline-offset: 2px; }
 
-  /* Guide modal trigger button */
-  .guide-modal-btn { display: inline-flex; align-items: center; gap: 4px; background: none; border: none; padding: 0; font: inherit; font-size: 0.84rem; font-weight: 600; color: #003476; cursor: pointer; text-decoration: none; }
-  .guide-modal-btn:hover { text-decoration: underline; }
+  /* Link to the guide (opens in a new tab) */
+  .source-note { margin-top: 0; line-height: 1.5; }
+  .guide-link-btn { display: inline-flex; align-items: center; gap: 4px; background: none; border: none; padding: 0; font: inherit; font-size: 0.84rem; font-weight: 600; color: #003476; cursor: pointer; text-decoration: none; }
+  .guide-link-btn:hover { text-decoration: underline; }
 
-  /* Guide modal overlay */
-  #guideModal { display: none; position: fixed; inset: 0; z-index: 9000; background: rgba(0,0,0,0.55); align-items: center; justify-content: center; padding: 16px; }
-  #guideModal.open { display: flex; }
-  .guide-modal-box { background: white; border-radius: 10px; box-shadow: 0 8px 40px rgba(0,0,0,0.25); width: 100%; max-width: 900px; height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
-  .guide-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 18px; background: #003476; color: white; flex-shrink: 0; }
-  .guide-modal-header span { font-size: 0.95rem; font-weight: 700; }
-  .guide-modal-close { background: none; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 4px; opacity: 0.85; }
-  .guide-modal-close:hover { opacity: 1; background: rgba(255,255,255,0.15); }
-  #guideFrame { flex: 1; border: none; width: 100%; }
-  /* Shown while the guide (a few MB of screenshots) is on its way */
-  .guide-loading { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; color: #555; font-size: 0.9rem; }
-  .guide-loading[hidden] { display: none !important; }
-  .guide-spinner { width: 34px; height: 34px; border: 3px solid #dde1ea; border-top-color: #003476; border-radius: 50%; animation: guideSpin 0.9s linear infinite; }
-  @keyframes guideSpin { to { transform: rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce) { .guide-spinner { animation: none; border-top-color: #dde1ea; } }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
-  /* Print: the result card is what people put on paper – map, buttons and modal are not */
+  /* Print: the result card is what people put on paper – map and buttons are not */
   @media print {
     html, body { height: auto; background: white; }
     body { display: block; }
     .container { display: block; max-width: none; box-shadow: none; }
     .sidebar { display: block; width: 100%; min-width: 0; padding: 0; overflow: visible; }
     .map-pane, .lang-switch, .search-box, .steps, .reset-row, .consulates,
-    .disambiguation, .error-msg, #guideModal { display: none !important; }
+    .disambiguation, .error-msg { display: none !important; }
     header { box-shadow: none; }
     .header-inner { padding: 0 0 10px; }
-    .result-card { display: block !important; border: 1px solid #999; page-break-inside: avoid; }
+    .result-card { display: none !important; }
+    .result-card.visible { display: block !important; border: 1px solid #999; page-break-inside: avoid; }
     .eprox-btn { background: none !important; color: #000 !important; border: 1px solid #999; }
     .eprox-btn .ic, .guide { display: none; }
     .detail a, .contact-links a { color: #000; text-decoration: none; }
@@ -879,10 +866,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
     <div class="search-box">
       <label class="field-label" for="plzInput" data-i18n="inputLabel">Ταχυδρομικός κώδικας κατοικίας</label>
       <div class="search-row">
-        <input type="text" id="plzInput" placeholder="π.χ. 80331" data-i18n-placeholder="placeholder" maxlength="5" inputmode="numeric" autocomplete="postal-code"/>
+        <input type="text" id="plzInput" placeholder="π.χ. 80331" data-i18n-placeholder="placeholder" maxlength="5" inputmode="numeric" autocomplete="postal-code" aria-describedby="plzHint"/>
         <button type="button" id="plzBtn" aria-label="Αναζήτηση" data-i18n-aria="searchAria"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 21l-4.35-4.35"/><circle cx="11" cy="11" r="7"/></svg></button>
       </div>
-      <p class="plz-hint"><span data-i18n="hint">Δεν γνωρίζετε τον ΤΚ σας;</span> <a href="https://www.postdirekt.de/plzserver/" target="_blank" rel="noopener noreferrer" data-i18n="hintLink">Βρείτε τον εδώ ↗</a></p>
+      <p class="plz-hint" id="plzHint"><span data-i18n="hint">Δεν γνωρίζετε τον ΤΚ σας;</span> <a href="https://www.postdirekt.de/plzserver/" target="_blank" rel="noopener noreferrer" data-i18n="hintLink">Βρείτε τον εδώ ↗</a></p>
     </div>
 
     <div class="error-msg" id="errorMsg" role="alert"></div>
@@ -899,7 +886,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
         <li><span class="num">2</span><span data-i18n="step2">Μεταβείτε στο e-proxeneio του προξενείου σας.</span></li>
         <li><span class="num">3</span><span data-i18n="step3">Υποβάλετε την αίτησή σας online· αν χρειάζεται αυτοπρόσωπη παρουσία, το ραντεβού κλείνεται μέσα από την αίτηση.</span></li>
       </ol>
-      <p class="guide-line"><span data-i18n="guideLead">Πρώτη φορά στο e-proxeneio;</span> <button type="button" class="guide-modal-btn" onclick="openGuideModal()"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span data-i18n="guideLink">Οδηγός χρήσης (HTML/PDF)</span></button></p>
+      <p class="guide-line"><span data-i18n="guideLead">Πρώτη φορά στο e-proxeneio;</span> <a class="guide-link-btn" data-guide-link href="odigos-e-proxeneio.html?lang=el" target="_blank" rel="noopener noreferrer"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span data-i18n="guideLink">Οδηγός χρήσης / Αποθήκευση ως PDF</span></a></p>
     </div>
 
     <div class="result-card" id="resultCard" aria-live="polite">
@@ -913,7 +900,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
         <svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
       </a>
       <div class="guide">
-        <span><span data-i18n="guideLead">Πρώτη φορά στο e-proxeneio;</span> <button type="button" class="guide-modal-btn" onclick="openGuideModal()"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span data-i18n="guideLink">Οδηγός χρήσης (HTML/PDF)</span></button></span>
+        <span><span data-i18n="guideLead">Πρώτη φορά στο e-proxeneio;</span> <a class="guide-link-btn" data-guide-link href="odigos-e-proxeneio.html?lang=el" target="_blank" rel="noopener noreferrer"><svg class="ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span data-i18n="guideLink">Οδηγός χρήσης / Αποθήκευση ως PDF</span></a></span>
       </div>
 
       <div class="contact">
@@ -938,6 +925,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     </div>
 
     <p class="data-note"><span data-i18n="dataLead">Ταχυδρομικοί κώδικες (ενημέρωση Νοεμβρίου 2026):</span> <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a> (ODbL) <span data-i18n="via">μέσω</span> <a href="https://github.com/openpotato/openplzapi.data" target="_blank" rel="noopener noreferrer">OpenPLZ API</a>, <a href="https://www.geonames.org" target="_blank" rel="noopener noreferrer">GeoNames</a> (CC BY 4.0). <span data-i18n="dataLicense">Ο πίνακας ΤΚ της σελίδας διατίθεται με άδεια ODbL.</span> <span data-i18n="bordersLead">Όρια κρατιδίων:</span> © GeoBasis-DE / <a href="https://www.bkg.bund.de" target="_blank" rel="noopener noreferrer">BKG</a> (2026), <a href="https://www.govdata.de/dl-de/by-2-0" target="_blank" rel="noopener noreferrer">dl-de/by-2-0</a> (Daten verändert).</p>
+    <p class="data-note source-note"><a href="https://www.mfa.gr/germany/eservices/consulates/" target="_blank" rel="noopener noreferrer" data-i18n="jurisdictionSource">Επίσημες προξενικές περιφέρειες (ΥΠΕΞ)</a><br><span data-i18n="jurisdictionChecked">Αντιπαραβολή περιφερειών: 06/11/2026. Για τα τρέχοντα στοιχεία επικοινωνίας, συμβουλευτείτε την ιστοσελίδα του προξενείου.</span></p>
   </div>
 
   <div class="map-pane">
@@ -987,10 +975,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
       eproxTitle: 'Μετάβαση στο e-proxeneio',
       eproxSub: 'Υποβολή αιτήσεων online· το ραντεβού κλείνεται μέσα από την αίτηση',
       guideLead: 'Πρώτη φορά στο e-proxeneio;',
-      guideLink: 'Οδηγός χρήσης (HTML/PDF)',
-      guideModalTitle: 'Οδηγός χρήσης e-proxeneio',
-      guideModalClose: 'Κλείσιμο',
-      guideLoading: 'Φόρτωση οδηγού… (περιέχει εικόνες, μπορεί να αργήσει σε αργή σύνδεση)',
+      guideLink: 'Οδηγός χρήσης / Αποθήκευση ως PDF',
       nav: 'Οδηγίες μετάβασης',
       website: 'Ιστοσελίδα προξενείου',
       note: 'Σε περίπτωση αμφιβολίας για την αρμοδιότητα, επικοινωνήστε με το προξενείο.',
@@ -1002,6 +987,8 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
       dataLead: 'Ταχυδρομικοί κώδικες (ενημέρωση Νοεμβρίου 2026):',
       via: 'μέσω',
       dataLicense: 'Ο πίνακας ΤΚ της σελίδας διατίθεται με άδεια ODbL.',
+      jurisdictionSource: 'Επίσημες προξενικές περιφέρειες (ΥΠΕΞ)',
+      jurisdictionChecked: 'Αντιπαραβολή περιφερειών: 06/11/2026. Για τα τρέχοντα στοιχεία επικοινωνίας, συμβουλευτείτε την ιστοσελίδα του προξενείου.',
       bordersLead: 'Όρια κρατιδίων:'
     },
     de: {
@@ -1025,10 +1012,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
       eproxTitle: 'Weiter zu e-proxeneio',
       eproxSub: 'Anträge online stellen – Termine werden über den Antrag vereinbart',
       guideLead: 'Zum ersten Mal bei e-proxeneio?',
-      guideLink: 'Anleitung (HTML/PDF, auf Griechisch)',
-      guideModalTitle: 'Anleitung e-proxeneio',
-      guideModalClose: 'Schließen',
-      guideLoading: 'Anleitung wird geladen… (enthält Bilder, bei langsamer Verbindung etwas Geduld)',
+      guideLink: 'Anleitung / Als PDF speichern',
       nav: 'Route planen',
       website: 'Website des Konsulats',
       note: 'Bei Fragen zur Zuständigkeit wenden Sie sich bitte an das Konsulat.',
@@ -1040,6 +1024,8 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
       dataLead: 'Postleitzahlen (Stand: November 2026):',
       via: 'über',
       dataLicense: 'Die Postleitzahlen-Tabelle dieser Seite steht unter der ODbL.',
+      jurisdictionSource: 'Offizielle Konsularbezirke (Außenministerium)',
+      jurisdictionChecked: 'Abgleich der Konsularbezirke: 06.11.2026. Aktuelle Kontaktdaten finden Sie auf der Webseite des Konsulats.',
       bordersLead: 'Ländergrenzen:'
     }
   };
@@ -1358,7 +1344,10 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
     phones.textContent = '';
     i.phones.forEach(p => {
       const line = document.createElement('div');
-      line.textContent = p;
+      const call = document.createElement('a');
+      call.href = 'tel:' + p.replace(/[^+\d]/g, '');
+      call.textContent = p;
+      line.appendChild(call);
       phones.appendChild(line);
     });
 
@@ -1414,6 +1403,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
       renderCard(state.key, state.bl);
     }
 
+    $('plzInput').setAttribute('aria-invalid', String(state.mode === 'error'));
     const shownKey = ['result', 'consulate', 'state'].includes(state.mode) ? state.key : null;
     $('stepsBox').hidden = shownKey !== null;
     $('resetRow').hidden = state.mode === null;   // nothing to reset on a fresh page   // the card takes the place of "How it works"
@@ -1512,6 +1502,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.placeholder = t(el.dataset.i18nPlaceholder); });
     document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
     document.querySelectorAll('.lang-switch button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+    document.querySelectorAll('[data-guide-link]').forEach(a => { a.href = 'odigos-e-proxeneio.html?lang=' + lang; });
     Object.keys(consulateLabels).forEach(key => { consulateLabels[key].textContent = info(key).city; });
     Object.keys(pins).forEach(key => pins[key].setIcon(pinIcon(key)));
     cityMarkers.forEach((m, i) => m.setIcon(cityIcon(CITIES[i])));
@@ -1520,6 +1511,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
     mapTitle.textContent = t('mapTitle');
     tooltip.remove();
     render();
+    document.dispatchEvent(new CustomEvent('eprox-language', { detail: lang }));
   }
 
   function setLang(l) {
@@ -1535,88 +1527,7 @@ const bundeslaenderData = {"type":"FeatureCollection","features":[{"type":"Featu
   $('plzInput').addEventListener('keydown', e => { if (e.key === 'Enter') searchPLZ(); });
 
   applyLanguage();
-})();
-</script>
-<!-- Guide modal -->
-<div id="guideModal" role="dialog" aria-modal="true" aria-label="Οδηγός χρήσης e-proxeneio">
-  <div class="guide-modal-box">
-    <div class="guide-modal-header">
-      <span data-i18n="guideModalTitle">Οδηγός χρήσης e-proxeneio</span>
-      <button class="guide-modal-close" onclick="closeGuideModal()" aria-label="Κλείσιμο" data-i18n-aria="guideModalClose">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
-      </button>
-    </div>
-    <div class="guide-loading" id="guideLoading">
-      <div class="guide-spinner" aria-hidden="true"></div>
-      <p data-i18n="guideLoading">Φόρτωση οδηγού… (περιέχει εικόνες, μπορεί να αργήσει σε αργή σύνδεση)</p>
-    </div>
-    <iframe id="guideFrame" title="Οδηγός χρήσης e-proxeneio" hidden></iframe>
-  </div>
-</div>
-
-<script>
-(function () {
-  var modal   = document.getElementById('guideModal');
-  var frame   = document.getElementById('guideFrame');
-  var loading = document.getElementById('guideLoading');
-  var closeBtn= modal.querySelector('.guide-modal-close');
-  var opener  = null;          // the element that opened the dialog, to give focus back
-  var settled = false;         // the guide has either arrived or failed
-
-  function showFrame() {
-    if (settled) return;
-    settled = true;
-    loading.hidden = true;
-    frame.hidden = false;
-  }
-
-  // The guide lives next to this file. If it has been moved, say so instead of
-  // leaving the spinner turning for ever.
-  function showLoadError() {
-    if (settled) return;
-    settled = true;
-    frame.remove();
-    loading.textContent = document.documentElement.lang === 'de'
-      ? 'Die Anleitung (odigos-e-proxeneio.html) konnte nicht geladen werden.'
-      : 'Ο οδηγός (odigos-e-proxeneio.html) δεν ήταν δυνατό να φορτωθεί.';
-    loading.style.padding = '24px';
-    loading.style.textAlign = 'center';
-  }
-  frame.addEventListener('load', showFrame);
-  frame.addEventListener('error', showLoadError);
-
-  window.openGuideModal = function () {
-    opener = document.activeElement;
-    if (!frame.src || frame.src === window.location.href) {
-      frame.src = 'odigos-e-proxeneio.html';
-      // file:// and some servers never fire 'error'; fall back to a timeout check
-      window.setTimeout(showLoadError, 30000);
-    }
-    modal.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    closeBtn.focus();
-  };
-
-  window.closeGuideModal = function () {
-    if (!modal.classList.contains('open')) return;
-    modal.classList.remove('open');
-    document.body.style.overflow = '';
-    if (opener && opener.focus) opener.focus();   // back to the link that opened it
-    opener = null;
-  };
-
-  modal.addEventListener('click', function (e) { if (e.target === this) closeGuideModal(); });
-
-  // While the dialog is open the keyboard stays inside it (aria-modal promises this)
-  document.addEventListener('keydown', function (e) {
-    if (!modal.classList.contains('open')) return;
-    if (e.key === 'Escape') { closeGuideModal(); return; }
-    if (e.key !== 'Tab') return;
-    var stops = [closeBtn].concat(frame.isConnected && !frame.hidden ? [frame] : []);
-    var i = stops.indexOf(document.activeElement);
-    e.preventDefault();
-    stops[(i + (e.shiftKey ? stops.length - 1 : 1) + stops.length) % stops.length].focus();
-  });
+  document.addEventListener('DOMContentLoaded', applyLanguage, { once: true });
 })();
 </script>
 </body>
